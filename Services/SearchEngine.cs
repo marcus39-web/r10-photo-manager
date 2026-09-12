@@ -14,13 +14,15 @@ namespace R10CSharp.Services
             _index = index ?? new List<PhotoIndexEntry>();
         }
 
-        public List<PhotoIndexEntry> Search(string query, string category, string rawOrJpg, string series, string favorites)
+        // Accept nullable filter parameters to avoid nullability warnings from callers
+        public List<PhotoIndexEntry> Search(string? query, string? category, string? rawOrJpg, string? series, string? favorites)
         {
             IEnumerable<PhotoIndexEntry> q = _index;
 
             if (!string.IsNullOrWhiteSpace(query))
             {
-                q = q.Where(i => i.FileName.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0 || (i.Tags ?? string.Empty).IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0);
+                q = q.Where(i => i.FileName.IndexOf(query!, StringComparison.OrdinalIgnoreCase) >= 0
+                                 || (i.Tags ?? string.Empty).IndexOf(query!, StringComparison.OrdinalIgnoreCase) >= 0);
             }
 
             if (!string.IsNullOrWhiteSpace(category)) q = q.Where(i => string.Equals(i.Category, category, StringComparison.OrdinalIgnoreCase));
