@@ -30,6 +30,10 @@
                 <ComboBoxItem Content="Hell"/>
             </ComboBox>
 
+            <!-- Parallelitaet fuer Thumbnail-Erzeugung -->
+            <TextBlock Text="Thumbnail-Parallelitaet:" FontSize="18"/>
+            <TextBox x:Name="ParallelismBox" Width="100" Margin="0 0 0 10"/>
+
             <!-- Speichern -->
             <Button Content="Speichern"
                     Width="200" Height="50"

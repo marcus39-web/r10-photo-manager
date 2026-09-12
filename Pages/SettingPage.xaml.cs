@@ -1,30 +1,36 @@
+using System;
 using System.Windows;
 using System.Windows.Controls;
+using R10CSharp.Services;
 
 namespace R10CSharp.Pages
 {
     public partial class SettingsPage : Page
     {
+        private AppSettings _settings = new AppSettings();
+
         public SettingsPage()
         {
             InitializeComponent();
 
-            // Defaultwerte laden
-            ArchivePathBox.Text = @"D:\10_Fotoarchiv";
-            IndexPathBox.Text = @"D:\11_Foto_App\R10CSharp\Data\index.json";
-            DefaultFilterBox.SelectedIndex = 0; // RAW
-            ThemeBox.SelectedIndex = 0; // Grün-Weiß
+            // Load settings
+            _settings = SettingsService.Load();
+
+            ArchivePathBox.Text = _settings.ArchivePath;
+            IndexPathBox.Text = _settings.IndexPath;
+            DefaultFilterBox.SelectedIndex = 0; // RAW default
+            ThemeBox.SelectedIndex = 0;
+            ParallelismBox.Text = _settings.ThumbnailParallelism.ToString();
         }
 
         private void Save_Click(object sender, RoutedEventArgs e)
         {
-            var archivePath = ArchivePathBox.Text;
-            var indexPath = IndexPathBox.Text;
-            var defaultFilter = (DefaultFilterBox.SelectedItem as ComboBoxItem)?.Content.ToString();
-            var theme = (ThemeBox.SelectedItem as ComboBoxItem)?.Content.ToString();
+            _settings.ArchivePath = ArchivePathBox.Text;
+            _settings.IndexPath = IndexPathBox.Text;
+            if (int.TryParse(ParallelismBox.Text, out var p) && p > 0) _settings.ThumbnailParallelism = p;
+            SettingsService.Save(_settings);
 
-            MessageBox.Show($"Einstellungen gespeichert:\n\nArchiv: {archivePath}\nIndex: {indexPath}\nFilter: {defaultFilter}\nTheme: {theme}");
+            MessageBox.Show("Einstellungen gespeichert.");
         }
-        // Navigation handler removed from page to avoid duplicate navigation logic
     }
 }

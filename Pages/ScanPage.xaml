@@ -31,6 +31,15 @@
                          Maximum="100"
                          Value="0"/>
 
+            <TextBlock x:Name="ScanFileName"
+                       FontSize="14"
+                       Margin="0 4 0 0"
+                       Foreground="#333"/>
+            <TextBlock x:Name="ScanEta"
+                       FontSize="14"
+                       Margin="0 4 0 0"
+                       Foreground="#333"/>
+
             <TextBlock x:Name="ScanStatus"
                        FontSize="18"
                        Margin="0 8 0 0"

@@ -54,14 +54,26 @@ namespace R10CSharp.Pages
 
                 _cts = new CancellationTokenSource();
                 var scanned = 0;
+                var sw = System.Diagnostics.Stopwatch.StartNew();
+
+                var settings = SettingsService.Load();
+                var parallelism = settings?.ThumbnailParallelism > 0 ? settings.ThumbnailParallelism : 4;
+
                 var progress = new Progress<PhotoIndexEntry>(entry =>
                 {
                     scanned++;
                     ScanProgress.Value = scanned;
+                    ScanFileName.Text = entry.FileName;
+                    // ETA calculation
+                    var elapsed = sw.Elapsed.TotalSeconds;
+                    var avg = elapsed / Math.Max(1, scanned);
+                    var remaining = total - scanned;
+                    var eta = TimeSpan.FromSeconds(avg * remaining);
+                    ScanEta.Text = $@"ETA: {eta:mm\:ss}";
                     ScanStatus.Text = $"Scanne... {scanned}/{total}";
                 });
 
-                var index = await builder.BuildIndexAsync(root, progress, _cts.Token);
+                var index = await builder.BuildIndexAsyncParallel(root, parallelism, progress, _cts.Token);
                 builder.SaveIndex(index, indexPath);
 
                 ScanStatus.Text = $"Scan abgeschlossen. {index.Count} Dateien gefunden.";
