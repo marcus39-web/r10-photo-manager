@@ -13,12 +13,12 @@ namespace R10CSharp.Pages
         {
             InitializeComponent();
 
-            // Load settings
+            // Einstellungen laden
             _settings = SettingsService.Load();
 
             ArchivePathBox.Text = _settings.ArchivePath;
             IndexPathBox.Text = _settings.IndexPath;
-            DefaultFilterBox.SelectedIndex = 0; // RAW default
+            DefaultFilterBox.SelectedIndex = 0; // Standard: RAW
             ThemeBox.SelectedIndex = 0;
             ParallelismBox.Text = _settings.ThumbnailParallelism.ToString();
         }

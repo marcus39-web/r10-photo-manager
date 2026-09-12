@@ -32,7 +32,7 @@ namespace R10CSharp.Pages
                 ScanStatus.Text = "Scannen läuft...";
                 ScanProgress.Value = 0;
 
-                // determine total files for progress
+                // Anzahl der Dateien für die Fortschrittsanzeige ermitteln
                 var files = Directory.EnumerateFiles(root, "*.*", SearchOption.AllDirectories)
                     .Where(f => f.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)
                              || f.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)
@@ -64,7 +64,7 @@ namespace R10CSharp.Pages
                     scanned++;
                     ScanProgress.Value = scanned;
                     ScanFileName.Text = entry.FileName;
-                    // ETA calculation
+                    // ETA-Berechnung
                     var elapsed = sw.Elapsed.TotalSeconds;
                     var avg = elapsed / Math.Max(1, scanned);
                     var remaining = total - scanned;
@@ -98,6 +98,6 @@ namespace R10CSharp.Pages
         {
             _cts?.Cancel();
         }
-        // Navigation handler removed from page to avoid duplicate method names
+        // Navigations-Handler aus der Page entfernt, um doppelte Methodennamen zu vermeiden
     }
 }

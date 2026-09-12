@@ -8,7 +8,7 @@ namespace R10CSharp.Pages
         public StartPage()
         {
             InitializeComponent();
-            // Attach handlers programmatically to avoid XAML compile-time binding issues
+            // Handler programmgesteuert anhängen, um XAML-Compile-Time-Bindungsprobleme zu vermeiden
             if (this.FindName("SearchButton") is Button sb) sb.Click += Search_Click;
             if (this.FindName("ScanButton") is Button scb) scb.Click += Scan_Click;
             if (this.FindName("IndexButton") is Button ib) ib.Click += Index_Click;

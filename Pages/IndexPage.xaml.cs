@@ -20,6 +20,6 @@ namespace R10CSharp.Pages
             CategoryCount.Text = $"Kategorien: {index.Select(f => f.Category).Distinct().Count()}";
             SeriesCount.Text = $"Serien: {index.Select(f => f.Series).Distinct().Count()}";
         }
-        // Navigation handlers removed from page code-behind; navigation is handled by MainWindow
+        // Navigations-Handler aus dem Code-Behind der Seite entfernt; die Navigation wird vom MainWindow gesteuert
     }
 }

@@ -25,12 +25,12 @@ namespace R10CSharp.Services
         {
             try
             {
-                // Use WPF imaging to create a resized thumbnail
+                // Verwende WPF-Imaging, um ein verkleinertes Vorschaubild zu erstellen
                 var thumbs = EnsureThumbnailsFolder(Path.GetDirectoryName(imagePath) ?? string.Empty);
                 var fileName = Path.GetFileNameWithoutExtension(imagePath);
                 var thumbPath = Path.Combine(thumbs, fileName + "_thumb.jpg");
 
-                // If thumbnail already exists and is newer than source, reuse it
+                // Falls das Thumbnail bereits existiert und neuer ist als die Quell-Datei, wiederverwenden
                 if (File.Exists(thumbPath))
                 {
                     var ti = new FileInfo(thumbPath);
@@ -38,7 +38,7 @@ namespace R10CSharp.Services
                     if (ti.LastWriteTime >= si.LastWriteTime) return thumbPath;
                 }
 
-                // Create thumbnail using BitmapImage and JpegBitmapEncoder
+                // Erzeuge das Thumbnail mit BitmapImage und JpegBitmapEncoder
                 var uri = new Uri(imagePath, UriKind.Absolute);
                 var bitmap = new System.Windows.Media.Imaging.BitmapImage();
                 bitmap.BeginInit();
@@ -62,7 +62,7 @@ namespace R10CSharp.Services
             }
             catch
             {
-                // If any error (unsupported format), return null and continue
+                // Bei Fehlern (z. B. nicht unterstütztes Format) null zurückgeben und fortfahren
                 return null;
             }
         }
@@ -78,7 +78,7 @@ namespace R10CSharp.Services
                          || f.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)
                          || RawExtensions.Any(re => f.EndsWith(re, StringComparison.OrdinalIgnoreCase))
                          || f.EndsWith(".png", StringComparison.OrdinalIgnoreCase));
-            // Default parallelism: 4
+            // Standard-Parallelität: 4
             return await BuildIndexAsyncParallel(rootPath, 4, progress, ct);
         }
 
@@ -157,7 +157,7 @@ namespace R10CSharp.Services
                     Tags = string.Empty
                 };
 
-                // Try to create a thumbnail; if successful, store path
+                // Versuche, ein Thumbnail zu erstellen; bei Erfolg den Pfad speichern
                 var thumb = CreateThumbnail(fi.FullName);
                 if (!string.IsNullOrWhiteSpace(thumb)) entry.Thumbnail = thumb!;
 

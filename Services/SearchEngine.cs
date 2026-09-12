@@ -14,7 +14,7 @@ namespace R10CSharp.Services
             _index = index ?? new List<PhotoIndexEntry>();
         }
 
-        // Accept nullable filter parameters to avoid nullability warnings from callers
+        // Akzeptiere nullable Filter-Parameter, um Nullbarkeit-Warnungen der Aufrufer zu vermeiden
         public List<PhotoIndexEntry> Search(string? query, string? category, string? rawOrJpg, string? series, string? favorites)
         {
             IEnumerable<PhotoIndexEntry> q = _index;
