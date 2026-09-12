@@ -78,31 +78,57 @@ namespace R10CSharp.Services
                          || f.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)
                          || RawExtensions.Any(re => f.EndsWith(re, StringComparison.OrdinalIgnoreCase))
                          || f.EndsWith(".png", StringComparison.OrdinalIgnoreCase));
+            // Default parallelism: 4
+            return await BuildIndexAsyncParallel(rootPath, 4, progress, ct);
+        }
 
-            foreach (var f in files)
+        public async Task<List<PhotoIndexEntry>> BuildIndexAsyncParallel(string rootPath, int maxDegreeOfParallelism = 4, IProgress<PhotoIndexEntry>? progress = null, CancellationToken? cancellationToken = null)
+        {
+            var ct = cancellationToken ?? CancellationToken.None;
+            var result = new List<PhotoIndexEntry>();
+            if (!Directory.Exists(rootPath)) return result;
+
+            var files = Directory.EnumerateFiles(rootPath, "*.*", SearchOption.AllDirectories)
+                .Where(f => f.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)
+                         || f.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)
+                         || RawExtensions.Any(re => f.EndsWith(re, StringComparison.OrdinalIgnoreCase))
+                         || f.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
+                .ToArray();
+
+            using var semaphore = new SemaphoreSlim(maxDegreeOfParallelism);
+
+            var tasks = files.Select(async f =>
             {
                 ct.ThrowIfCancellationRequested();
-
-                var fi = new FileInfo(f);
-                var entry = new PhotoIndexEntry
+                await semaphore.WaitAsync(ct);
+                try
                 {
-                    FileName = fi.Name,
-                    FilePath = fi.FullName,
-                    RawOrJpg = RawExtensions.Any(re => fi.Extension.Equals(re, StringComparison.OrdinalIgnoreCase)) ? "RAW" : "JPG",
-                    Category = string.Empty,
-                    Series = string.Empty,
-                    Timestamp = fi.LastWriteTime,
-                    Tags = string.Empty
-                };
+                    var fi = new FileInfo(f);
+                    var entry = new PhotoIndexEntry
+                    {
+                        FileName = fi.Name,
+                        FilePath = fi.FullName,
+                        RawOrJpg = RawExtensions.Any(re => fi.Extension.Equals(re, StringComparison.OrdinalIgnoreCase)) ? "RAW" : "JPG",
+                        Category = string.Empty,
+                        Series = string.Empty,
+                        Timestamp = fi.LastWriteTime,
+                        Tags = string.Empty
+                    };
 
-                // create thumbnail off the UI thread
-                var thumb = await Task.Run(() => CreateThumbnail(fi.FullName));
-                if (!string.IsNullOrWhiteSpace(thumb)) entry.Thumbnail = thumb!;
+                    var thumb = await Task.Run(() => CreateThumbnail(fi.FullName), ct);
+                    if (!string.IsNullOrWhiteSpace(thumb)) entry.Thumbnail = thumb!;
 
-                result.Add(entry);
-                progress?.Report(entry);
-            }
+                    progress?.Report(entry);
+                    return entry;
+                }
+                finally
+                {
+                    semaphore.Release();
+                }
+            }).ToArray();
 
+            var entries = await Task.WhenAll(tasks);
+            result.AddRange(entries);
             return result;
         }
 
