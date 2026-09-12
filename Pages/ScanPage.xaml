@@ -1,0 +1,24 @@
+<Page x:Class="R10CSharp.Pages.ScanPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Background="White">
+
+    <Grid Margin="20">
+        <StackPanel>
+            <TextBlock Text="Archiv scannen" FontSize="28" Margin="0 0 0 20"/>
+
+            <Button x:Name="ScanButton" Content="Scan starten"
+                    Width="250" Height="60"
+                    Background="#2ECC71"
+                    Foreground="White"
+                    FontSize="22"
+                    Click="Scan_Click"/>
+
+            <TextBlock x:Name="ScanStatus"
+                       FontSize="18"
+                       Margin="0 20 0 0"
+                       Text="Bereit zum Scannen..."/>
+        </StackPanel>
+    </Grid>
+</Page>
+

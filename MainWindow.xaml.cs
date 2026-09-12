@@ -1,0 +1,15 @@
+using System.Windows;
+using System.Windows.Controls;
+using R10CSharp.Pages;
+
+namespace R10CSharp
+{
+    public partial class MainWindow : Window
+    {
+        public MainWindow()
+        {
+            InitializeComponent();
+            MainFrame.Navigate(new IndexPage());
+        }
+    }
+}

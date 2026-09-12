@@ -1,0 +1,17 @@
+<Page x:Class="R10CSharp.Pages.IndexPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Background="White">
+
+    <Grid Margin="20">
+        <StackPanel>
+            <TextBlock Text="Index Uebersicht" FontSize="28" Margin="0 0 0 20"/>
+
+            <TextBlock x:Name="TotalFiles" FontSize="20" Margin="0 0 0 10"/>
+            <TextBlock x:Name="RawCount" FontSize="20" Margin="0 0 0 10"/>
+            <TextBlock x:Name="JpgCount" FontSize="20" Margin="0 0 0 10"/>
+            <TextBlock x:Name="CategoryCount" FontSize="20" Margin="0 0 0 10"/>
+            <TextBlock x:Name="SeriesCount" FontSize="20" Margin="0 0 0 10"/>
+        </StackPanel>
+    </Grid>
+</Page>

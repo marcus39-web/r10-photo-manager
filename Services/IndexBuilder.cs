@@ -1,0 +1,57 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text.Json;
+using R10CSharp.Models;
+
+namespace R10CSharp.Services
+{
+    public class IndexBuilder
+    {
+        private static readonly string[] RawExtensions = new[] { ".cr2", ".nef", ".arw", ".rw2", ".dng" };
+
+        public List<PhotoIndexEntry> BuildIndex(string rootPath)
+        {
+            var result = new List<PhotoIndexEntry>();
+            if (!Directory.Exists(rootPath)) return result;
+
+            var files = Directory.EnumerateFiles(rootPath, "*.*", SearchOption.AllDirectories)
+                .Where(f => f.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)
+                         || f.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)
+                         || RawExtensions.Any(re => f.EndsWith(re, StringComparison.OrdinalIgnoreCase))
+                         || f.EndsWith(".png", StringComparison.OrdinalIgnoreCase));
+
+            foreach (var f in files)
+            {
+                var fi = new FileInfo(f);
+                result.Add(new PhotoIndexEntry
+                {
+                    FileName = fi.Name,
+                    FilePath = fi.FullName,
+                    RawOrJpg = RawExtensions.Any(re => fi.Extension.Equals(re, StringComparison.OrdinalIgnoreCase)) ? "RAW" : "JPG",
+                    Category = string.Empty,
+                    Series = string.Empty,
+                    Timestamp = fi.LastWriteTime,
+                    Tags = string.Empty
+                });
+            }
+
+            return result;
+        }
+
+        public void SaveIndex(List<PhotoIndexEntry> index, string filePath)
+        {
+            var options = new JsonSerializerOptions { WriteIndented = true };
+            var json = JsonSerializer.Serialize(index, options);
+            File.WriteAllText(filePath, json);
+        }
+
+        public List<PhotoIndexEntry> LoadIndex(string filePath)
+        {
+            if (!File.Exists(filePath)) return new List<PhotoIndexEntry>();
+            var json = File.ReadAllText(filePath);
+            return JsonSerializer.Deserialize<List<PhotoIndexEntry>>(json) ?? new List<PhotoIndexEntry>();
+        }
+    }
+}

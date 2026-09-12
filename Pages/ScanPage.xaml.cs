@@ -1,0 +1,28 @@
+using System.Windows;
+using System.Windows.Controls;
+using R10CSharp.Services;
+
+namespace R10CSharp.Pages
+{
+    public partial class ScanPage : Page
+    {
+        public ScanPage()
+        {
+            InitializeComponent();
+        }
+
+        private void Scan_Click(object sender, RoutedEventArgs e)
+        {
+            var builder = new IndexBuilder();
+            var indexPath = @"D:\11_Foto_App\R10CSharp\Data\index.json";
+
+            ScanStatus.Text = "Scannen läuft...";
+
+            var index = builder.BuildIndex(@"D:\10_Fotoarchiv");
+            builder.SaveIndex(index, indexPath);
+
+            ScanStatus.Text = $"Scan abgeschlossen. {index.Count} Dateien gefunden.";
+        }
+        // Navigation handler removed from page to avoid duplicate method names
+    }
+}

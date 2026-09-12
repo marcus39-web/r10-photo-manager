@@ -1,0 +1,17 @@
+D:\11_Foto_App\R10CSharp\obj\Debug\net8.0-windows\MainWindow.baml
+D:\11_Foto_App\R10CSharp\obj\Debug\net8.0-windows\App.baml
+D:\11_Foto_App\R10CSharp\obj\Debug\net8.0-windows\MainWindow.g.cs
+D:\11_Foto_App\R10CSharp\obj\Debug\net8.0-windows\App.g.cs
+D:\11_Foto_App\R10CSharp\obj\Debug\net8.0-windows\R10CSharp_MarkupCompile.cache
+D:\11_Foto_App\R10CSharp\obj\Debug\net8.0-windows\R10CSharp.g.resources
+D:\11_Foto_App\R10CSharp\obj\Debug\net8.0-windows\R10CSharp.GeneratedMSBuildEditorConfig.editorconfig
+D:\11_Foto_App\R10CSharp\obj\Debug\net8.0-windows\R10CSharp.AssemblyInfoInputs.cache
+D:\11_Foto_App\R10CSharp\obj\Debug\net8.0-windows\R10CSharp.AssemblyInfo.cs
+D:\11_Foto_App\R10CSharp\obj\Debug\net8.0-windows\R10CSharp.csproj.CoreCompileInputs.cache
+D:\11_Foto_App\R10CSharp\obj\Debug\net8.0-windows\R10CSharp.sourcelink.json
+D:\11_Foto_App\R10CSharp\obj\Debug\net8.0-windows\Pages\IndexPage.baml
+D:\11_Foto_App\R10CSharp\obj\Debug\net8.0-windows\Pages\ScanPage.baml
+D:\11_Foto_App\R10CSharp\obj\Debug\net8.0-windows\Pages\IndexPage.g.cs
+D:\11_Foto_App\R10CSharp\obj\Debug\net8.0-windows\Pages\ScanPage.g.cs
+D:\11_Foto_App\R10CSharp\obj\Debug\net8.0-windows\Pages\SearchPage.baml
+D:\11_Foto_App\R10CSharp\obj\Debug\net8.0-windows\Pages\SearchPage.g.cs
