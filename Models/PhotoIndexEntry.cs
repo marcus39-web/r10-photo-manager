@@ -11,5 +11,7 @@ namespace R10CSharp.Models
         public string Series { get; set; } = string.Empty;
         public DateTime Timestamp { get; set; } = DateTime.MinValue;
         public string Tags { get; set; } = string.Empty;
+        // Relative or absolute path to a generated thumbnail image
+        public string Thumbnail { get; set; } = string.Empty;
     }
 }

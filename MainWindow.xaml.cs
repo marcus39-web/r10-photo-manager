@@ -9,7 +9,7 @@ namespace R10CSharp
         public MainWindow()
         {
             InitializeComponent();
-            MainFrame.Navigate(new IndexPage());
+            MainFrame.Navigate(new StartPage());
         }
     }
 }

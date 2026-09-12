@@ -20,7 +20,7 @@
                      Height="35"
                      FontSize="18"
                      Margin="0 0 10 0"
-                     VerticalContentAlignment="Center" />;
+                     VerticalContentAlignment="Center" />
 
             <Button Content="Suchen"
                     Width="120"
