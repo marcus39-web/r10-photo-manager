@@ -9,6 +9,7 @@ namespace R10CSharp.Services
         public int ThumbnailParallelism { get; set; } = 4;
         public string ArchivePath { get; set; } = @"D:\\10_Fotoarchiv";
         public string IndexPath { get; set; } = @"D:\\11_Foto_App\\R10CSharp\\Data\\index.json";
+        public string ConnectionString { get; set; } = @"Server=(localdb)\\MSSQLLocalDB;Database=R10PhotoDb;Trusted_Connection=True;";
     }
 
     public static class SettingsService

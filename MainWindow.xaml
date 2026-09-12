@@ -3,6 +3,39 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="R10 Photo Manager" Height="800" Width="1200">
     <Grid>
-        <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden"/>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="220" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- Left navigation -->
+        <Border Grid.Column="0" Background="#FFFFFF" BorderBrush="#E6E6E6" BorderThickness="0,0,1,0">
+            <StackPanel Orientation="Vertical" Margin="12">
+                <TextBlock Text="R10 Photo" FontSize="20" FontWeight="Bold" Margin="4" />
+                <StackPanel Margin="0,12,0,0">
+                    <Button x:Name="NavStart" Content="Start" Style="{StaticResource NavButtonStyle}" />
+                    <Button x:Name="NavSearch" Content="Suche" Style="{StaticResource NavButtonStyle}" />
+                    <Button x:Name="NavScan" Content="Scan" Style="{StaticResource NavButtonStyle}" />
+                    <Button x:Name="NavIndex" Content="Index" Style="{StaticResource NavButtonStyle}" />
+                    <Button x:Name="NavSettings" Content="Einstellungen" Style="{StaticResource NavButtonStyle}" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Right content area -->
+        <DockPanel Grid.Column="1">
+            <DockPanel DockPanel.Dock="Top" Background="#FAFAFA" Height="64" VerticalAlignment="Top">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="12">
+                    <TextBox x:Name="TopSearchBox" Width="420" Height="34" Margin="4" />
+                    <Button x:Name="TopSearchButton" Content="Suchen" Height="34" Margin="4" Width="88" />
+                </StackPanel>
+            </DockPanel>
+
+            <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden" Background="White" />
+
+            <StatusBar DockPanel.Dock="Bottom">
+                <StatusBarItem Content="Bereit" />
+            </StatusBar>
+        </DockPanel>
     </Grid>
 </Window>

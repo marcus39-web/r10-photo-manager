@@ -176,9 +176,18 @@ namespace R10CSharp.Services
 
         public List<PhotoIndexEntry> LoadIndex(string filePath)
         {
-            if (!File.Exists(filePath)) return new List<PhotoIndexEntry>();
-            var json = File.ReadAllText(filePath);
-            return JsonSerializer.Deserialize<List<PhotoIndexEntry>>(json) ?? new List<PhotoIndexEntry>();
+            try
+            {
+                if (!File.Exists(filePath)) return new List<PhotoIndexEntry>();
+                var json = File.ReadAllText(filePath);
+                if (string.IsNullOrWhiteSpace(json)) return new List<PhotoIndexEntry>();
+                return JsonSerializer.Deserialize<List<PhotoIndexEntry>>(json) ?? new List<PhotoIndexEntry>();
+            }
+            catch
+            {
+                // Bei Fehlern beim Einlesen/Deserialisieren einen leeren Index zurückgeben
+                return new List<PhotoIndexEntry>();
+            }
         }
     }
 }

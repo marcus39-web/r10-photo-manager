@@ -35,6 +35,11 @@
         <StackPanel Grid.Column="0" Margin="0 60 20 0">
             <TextBlock Text="Filter" FontSize="22" Margin="0 0 0 10"/>
 
+            <ComboBox x:Name="FolderFilter"
+                      FontSize="18"
+                      Margin="0 10 0 0"
+                      SelectionChanged="FolderFilter_SelectionChanged"/>
+
             <ComboBox x:Name="CategoryFilter"
                       FontSize="18"
                       Margin="0 10 0 0"/>
