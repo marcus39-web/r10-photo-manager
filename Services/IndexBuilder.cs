@@ -67,6 +67,45 @@ namespace R10CSharp.Services
             }
         }
 
+        public async Task<List<PhotoIndexEntry>> BuildIndexAsync(string rootPath, IProgress<PhotoIndexEntry>? progress = null, CancellationToken? cancellationToken = null)
+        {
+            var ct = cancellationToken ?? CancellationToken.None;
+            var result = new List<PhotoIndexEntry>();
+            if (!Directory.Exists(rootPath)) return result;
+
+            var files = Directory.EnumerateFiles(rootPath, "*.*", SearchOption.AllDirectories)
+                .Where(f => f.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)
+                         || f.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)
+                         || RawExtensions.Any(re => f.EndsWith(re, StringComparison.OrdinalIgnoreCase))
+                         || f.EndsWith(".png", StringComparison.OrdinalIgnoreCase));
+
+            foreach (var f in files)
+            {
+                ct.ThrowIfCancellationRequested();
+
+                var fi = new FileInfo(f);
+                var entry = new PhotoIndexEntry
+                {
+                    FileName = fi.Name,
+                    FilePath = fi.FullName,
+                    RawOrJpg = RawExtensions.Any(re => fi.Extension.Equals(re, StringComparison.OrdinalIgnoreCase)) ? "RAW" : "JPG",
+                    Category = string.Empty,
+                    Series = string.Empty,
+                    Timestamp = fi.LastWriteTime,
+                    Tags = string.Empty
+                };
+
+                // create thumbnail off the UI thread
+                var thumb = await Task.Run(() => CreateThumbnail(fi.FullName));
+                if (!string.IsNullOrWhiteSpace(thumb)) entry.Thumbnail = thumb!;
+
+                result.Add(entry);
+                progress?.Report(entry);
+            }
+
+            return result;
+        }
+
         public List<PhotoIndexEntry> BuildIndex(string rootPath)
         {
             var result = new List<PhotoIndexEntry>();
