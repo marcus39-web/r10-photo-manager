@@ -14,6 +14,17 @@ namespace R10CSharp.Pages
             var indexPath = @"D:\11_Foto_App\R10CSharp\Data\index.json";
             var index = IndexBuilder.LoadIndex(indexPath);
 
+            // Wenn der geladene Index leer ist, automatisch einen Neuaufbau starten
+            if (index == null || index.Count == 0)
+            {
+                // Suche nach ArchivePath aus Einstellungen
+                var settings = SettingsService.Load();
+                var root = settings?.ArchivePath ?? @"D:\10_Fotoarchiv";
+                index = IndexBuilder.BuildIndex(root);
+                // Index sofort speichern
+                IndexBuilder.SaveIndex(index, indexPath);
+            }
+
             TotalFiles.Text = $"Gesamtanzahl Dateien: {index.Count}";
             RawCount.Text = $"RAW Dateien: {index.Count(f => f.RawOrJpg == "RAW")}";
             JpgCount.Text = $"JPG Dateien: {index.Count(f => f.RawOrJpg == "JPG")}";

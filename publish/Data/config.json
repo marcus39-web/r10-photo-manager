@@ -1,0 +1,6 @@
+{
+  "ThumbnailParallelism": 4,
+  "ArchivePath": "D:\\\\10_Fotoarchiv\\\\Canon_R10_Bilder",
+  "IndexPath": "D:\\\\11_Foto_App\\\\R10CSharp\\\\Data\\\\index.json",
+  "ConnectionString": "Server=(localdb)\\\\MSSQLLocalDB;Database=R10PhotoDb;Trusted_Connection=True;"
+}

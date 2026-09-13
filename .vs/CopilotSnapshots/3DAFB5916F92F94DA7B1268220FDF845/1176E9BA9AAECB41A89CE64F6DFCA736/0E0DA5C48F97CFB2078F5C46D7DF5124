@@ -1,0 +1,48 @@
+﻿.vs/
+*.user
+*.suo
+
+# Build results
+/bin/
+/obj/
+/publish/
+
+# Rider
+.idea/
+
+# NuGet
+*.nupkg
+project.lock.json
+*.snupkg
+
+# Resharper
+_ReSharper*/
+*.ReSharper*/
+
+# Logs
+*.log
+build_log.txt
+
+# User-specific files
+*.userprefs
+
+# Data generated
+**/Data/Thumbnails/
+
+# Temporary files
+*.tmp
+*.cache
+
+# Windows image file cache
+Thumbs.db
+
+# VS Code
+.vscode/
+
+# Ignore compiled apphost and pdbs
+**/R10CSharp.dll
+**/*.pdb
+**/apphost.exe
+
+# keep index.json tracked (comment out if you prefer to ignore)
+# Data/index.json

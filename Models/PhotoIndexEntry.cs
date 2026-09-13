@@ -15,5 +15,29 @@ namespace R10CSharp.Models
         public string Tags { get; set; } = string.Empty;
         // Relativer oder absoluter Pfad zu einem generierten Vorschaubild
         public string Thumbnail { get; set; } = string.Empty;
+        // Name des direkten Parent-Ordners (z.B. 01_Bibliothek_JPG) zur Anzeige in der Trefferliste
+        public string ParentFolder { get; set; } = string.Empty;
+        // Benutzerfreundlicher Anzeigename: für JPG zeigt er Dateiname inkl. .jpg,
+        // für RAW wird die Endung entfernt und 'RAW' angehängt.
+        public string DisplayName
+        {
+            get
+            {
+                try
+                {
+                    if (string.Equals(RawOrJpg, "JPG", StringComparison.OrdinalIgnoreCase))
+                    {
+                        return FileName; // enthält bereits .jpg
+                    }
+                    // RAW: Dateiname ohne Extension + ' RAW'
+                    var name = System.IO.Path.GetFileNameWithoutExtension(FileName);
+                    return name + " RAW";
+                }
+                catch
+                {
+                    return FileName;
+                }
+            }
+        }
     }
 }

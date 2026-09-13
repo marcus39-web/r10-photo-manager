@@ -1,0 +1,101 @@
+﻿<Page x:Class="R10CSharp.Pages.SearchPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Background="White">
+
+    <Grid Margin="20">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="250"/>
+            <!-- Filter -->
+            <ColumnDefinition Width="*"/>
+            <!-- Trefferliste -->
+            <ColumnDefinition Width="500"/>
+            <!-- Grosse Vorschau -->
+        </Grid.ColumnDefinitions>
+
+        <!-- Suchfeld entfernt auf Wunsch des Benutzers -->
+
+        <!-- FILTER LINKS -->
+        <StackPanel Grid.Column="0" Margin="0 60 20 0">
+            <TextBlock Text="Filter" FontSize="22" Margin="0 0 0 10"/>
+
+            <ComboBox x:Name="FolderFilter"
+                      FontSize="18"
+                      Margin="0 10 0 0"
+                      SelectionChanged="FolderFilter_SelectionChanged"/>
+
+            <ComboBox x:Name="CategoryFilter"
+                      FontSize="18"
+                      Margin="0 10 0 0"/>
+
+            <ComboBox x:Name="RawJpgFilter"
+                      FontSize="18"
+                      Margin="0 10 0 0"/>
+
+            <ComboBox x:Name="SeriesFilter"
+                      FontSize="18"
+                      Margin="0 10 0 0"/>
+
+            <ComboBox x:Name="DateFilter"
+                      FontSize="18"
+                      Margin="0 10 0 0"/>
+
+            <ComboBox x:Name="FavoritesFilter"
+                      FontSize="18"
+                      Margin="0 10 0 0"/>
+        </StackPanel>
+
+        <!-- TREFFERLISTE MIT KLEINEN THUMBNAILS -->
+        <ListView x:Name="ResultList"
+                  Grid.Column="1"
+                  Margin="0 60 20 0"
+                  SelectionChanged="ResultList_SelectionChanged">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal" Margin="5">
+                        <StackPanel.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Umbenennen" Click="RenameMenu_Click" />
+                            </ContextMenu>
+                        </StackPanel.ContextMenu>
+                        <Image Source="{Binding Thumbnail}" Width="80" Height="80" Margin="0 0 10 0"/>
+                        <StackPanel>
+                            <TextBlock Text="{Binding DisplayName}" FontSize="18"/>
+                            <TextBlock Text="{Binding ParentFolder}" FontSize="14" Foreground="#555"/>
+                        </StackPanel>
+                    </StackPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        <!-- GROSSE BILDVORSCHAU -->
+        <Border Grid.Column="2"
+                Margin="0 60 0 0"
+                BorderBrush="#2ECC71"
+                BorderThickness="2"
+                CornerRadius="10"
+                Padding="10">
+            <StackPanel>
+                <Image x:Name="PreviewImage"
+                       Width="480"
+                       Height="480"
+                       Stretch="Uniform"
+                       Margin="0 0 0 20"/>
+
+                <TextBlock x:Name="PreviewFileName" FontSize="20" Margin="0 0 0 5"/>
+                <StackPanel Orientation="Horizontal" Margin="0 0 0 10">
+                    <TextBlock x:Name="PreviewCategory" FontSize="16" VerticalAlignment="Center" />
+                    <Button x:Name="RenameButton" Content="Namen ändern" Width="120" Height="28" Margin="10 0 0 0" Click="RenameButton_Click" />
+                </StackPanel>
+                <TextBlock x:Name="PreviewPath" FontSize="14" Foreground="#555"/>
+
+                <TextBox x:Name="PreviewNotes"
+                         Height="80"
+                         Margin="0 20 0 0"
+                         FontSize="16"
+                         TextWrapping="Wrap"/>
+            </StackPanel>
+        </Border>
+
+    </Grid>
+</Page>

@@ -1,0 +1,44 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+
+namespace R10CSharp.Services
+{
+    public static class FileScanner
+    {
+        public static IEnumerable<string> GetImageFiles(string rootPath, string[]? includeFolderNames = null)
+        {
+            if (!Directory.Exists(rootPath)) return Enumerable.Empty<string>();
+
+            var files = Directory.EnumerateFiles(rootPath, "*.*", SearchOption.AllDirectories)
+                .Where(f => f.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)
+                         || f.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)
+                         || f.EndsWith(".png", StringComparison.OrdinalIgnoreCase)
+                         || f.EndsWith(".cr2", StringComparison.OrdinalIgnoreCase)
+                         || f.EndsWith(".nef", StringComparison.OrdinalIgnoreCase)
+                         || f.EndsWith(".arw", StringComparison.OrdinalIgnoreCase));
+
+            if (includeFolderNames == null || includeFolderNames.Length == 0) return files;
+
+            var set = new HashSet<string>(includeFolderNames, StringComparer.OrdinalIgnoreCase);
+
+            return files.Where(f =>
+            {
+                try
+                {
+                    var rel = Path.GetRelativePath(rootPath, f);
+                    var parts = rel.Split(new[] { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar }, StringSplitOptions.RemoveEmptyEntries);
+                    if (parts.Length == 0) return false;
+                    // Take the first segment under rootPath (immediate subfolder)
+                    var first = parts[0];
+                    return set.Contains(first);
+                }
+                catch
+                {
+                    return false;
+                }
+            });
+        }
+    }
+}

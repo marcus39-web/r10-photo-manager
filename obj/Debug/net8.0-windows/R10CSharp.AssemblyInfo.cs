@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("R10CSharp")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+338d54f6b10a956944c3e9573c248748aa8df11f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6e7313a822107cd9fbe42e8833453b65894293fb")]
 [assembly: System.Reflection.AssemblyProductAttribute("R10CSharp")]
 [assembly: System.Reflection.AssemblyTitleAttribute("R10CSharp")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -1,0 +1,62 @@
+﻿using System;
+using System.IO;
+using System.Windows;
+using System.Windows.Controls;
+using R10CSharp.Pages;
+
+namespace R10CSharp
+{
+    public partial class MainWindow : Window
+    {
+        private static void MwLog(string msg)
+        {
+            try
+            {
+                var dir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
+                Directory.CreateDirectory(dir);
+                var path = Path.Combine(dir, "mainwindow_log.txt");
+                File.AppendAllText(path, $"[{DateTime.Now:O}] {msg}{Environment.NewLine}");
+            }
+            catch { }
+        }
+
+        public MainWindow()
+        {
+            MwLog("MainWindow ctor start");
+            try
+            {
+                InitializeComponent();
+                MwLog("InitializeComponent ok");
+
+                MainFrame.Navigate(new StartPage());
+                MwLog("Navigated to StartPage");
+
+                NavStart.Click += (s, e) => MainFrame.Navigate(new Pages.StartPage());
+                NavSearch.Click += (s, e) => MainFrame.Navigate(new Pages.SearchPage());
+                NavScan.Click += (s, e) => MainFrame.Navigate(new Pages.ScanPage());
+                NavIndex.Click += (s, e) => MainFrame.Navigate(new Pages.IndexPage());
+                NavSettings.Click += (s, e) => MainFrame.Navigate(new Pages.SettingsPage());
+
+                TopSearchButton.Click += (s, e) =>
+                {
+                    try
+                    {
+                        var q = TopSearchBox.Text;
+                        MainFrame.Navigate(new Pages.SearchPage(q));
+                    }
+                    catch (Exception ex)
+                    {
+                        MwLog($"TopSearchButton click error: {ex}");
+                    }
+                };
+
+                MwLog("MainWindow ctor end");
+            }
+            catch (Exception ex)
+            {
+                MwLog($"MainWindow ctor exception: {ex}");
+                throw;
+            }
+        }
+    }
+}

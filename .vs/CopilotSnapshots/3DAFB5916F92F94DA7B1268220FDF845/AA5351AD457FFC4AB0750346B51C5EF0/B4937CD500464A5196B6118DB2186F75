@@ -1,0 +1,15 @@
+﻿using System.Text.Json;
+
+public void SaveIndex(List<PhotoIndexEntry> index, string filePath)
+{
+    var options = new JsonSerializerOptions { WriteIndented = true };
+    var json = JsonSerializer.Serialize(index, options);
+    File.WriteAllText(filePath, json);
+}
+
+public List<PhotoIndexEntry> LoadIndex(string filePath)
+{
+    if (!File.Exists(filePath)) return new List<PhotoIndexEntry>();
+    var json = File.ReadAllText(filePath);
+    return JsonSerializer.Deserialize<List<PhotoIndexEntry>>(json);
+}

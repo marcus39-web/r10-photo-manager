@@ -1,0 +1,44 @@
+﻿using System;
+using System.Windows;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using R10CSharp.Data;
+using R10CSharp.Services;
+
+namespace R10CSharp
+{
+    public partial class App : Application
+    {
+        private IServiceProvider? _serviceProvider;
+
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            base.OnStartup(e);
+
+            var services = new ServiceCollection();
+
+            // Einstellungen laden
+            var settings = SettingsService.Load();
+            services.AddSingleton(settings);
+
+            // DbContext konfigurieren
+            services.AddDbContext<R10PhotoContext>(options =>
+                options.UseSqlServer(settings.ConnectionString));
+
+            _serviceProvider = services.BuildServiceProvider();
+
+            // Datenbank sicherstellen (erstellt DB, wenn nicht vorhanden)
+            try
+            {
+                using var scope = _serviceProvider.CreateScope();
+                var db = scope.ServiceProvider.GetRequiredService<R10PhotoContext>();
+                db.Database.EnsureCreated();
+            }
+            catch (Exception ex)
+            {
+                // Bei Fehlern nur protokollieren, App soll weiter starten
+                Console.WriteLine($"DB initialisierung fehlgeschlagen: {ex.Message}");
+            }
+        }
+    }
+}

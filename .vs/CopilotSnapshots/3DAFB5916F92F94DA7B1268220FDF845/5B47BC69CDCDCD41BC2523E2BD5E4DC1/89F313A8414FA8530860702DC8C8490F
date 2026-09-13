@@ -1,0 +1,161 @@
+﻿using System;
+using System.IO;
+using System.Threading.Tasks;
+using System.Windows;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using R10CSharp.Data;
+using R10CSharp.Services;
+
+namespace R10CSharp
+{
+    public partial class App : Application
+    {
+        static App()
+        {
+            try
+            {
+                var dir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
+                Directory.CreateDirectory(dir);
+                var path = Path.Combine(dir, "app_error_log.txt");
+
+                AppDomain.CurrentDomain.UnhandledException += (s, e) =>
+                {
+                    try
+                    {
+                        var ex = e.ExceptionObject as Exception;
+                        File.AppendAllText(path, $"[Unhandled] {DateTime.Now:O} {ex}\n");
+                    }
+                    catch { }
+                };
+
+                TaskScheduler.UnobservedTaskException += (s, e) =>
+                {
+                    try
+                    {
+                        File.AppendAllText(path, $"[UnobservedTask] {DateTime.Now:O} {e.Exception}\n");
+                    }
+                    catch { }
+                };
+            }
+            catch { }
+        }
+
+        private IServiceProvider? _serviceProvider;
+
+        private static void Log(string message)
+        {
+            try
+            {
+                var dir = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
+                if (!System.IO.Directory.Exists(dir)) System.IO.Directory.CreateDirectory(dir);
+                var path = System.IO.Path.Combine(dir, "app_start_log.txt");
+                var line = $"[{DateTime.Now:O}] {message}{Environment.NewLine}";
+                System.IO.File.AppendAllText(path, line);
+            }
+            catch
+            {
+                // swallow logging errors
+            }
+        }
+
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            base.OnStartup(e);
+            Log("OnStartup entered");
+
+            var services = new ServiceCollection();
+
+            // Einstellungen laden
+            Log("Loading settings");
+            var settings = SettingsService.Load();
+            Log("Settings loaded");
+            services.AddSingleton(settings);
+
+            // DbContext konfigurieren
+            services.AddDbContext<R10PhotoContext>(options =>
+                options.UseSqlServer(settings.ConnectionString));
+
+            // IndexImportService registrieren
+            services.AddScoped<IndexImportService>();
+
+            _serviceProvider = services.BuildServiceProvider();
+            Log("ServiceProvider built");
+
+            // Datenbank sicherstellen / Migrationen anwenden
+            try
+            {
+                using var scope = _serviceProvider.CreateScope();
+                Log("Creating DbContext");
+                var db = scope.ServiceProvider.GetRequiredService<R10PhotoContext>();
+                // Für Produktionsreife mit Versionierung nutzen wir Migrationen
+                // und wenden sie beim Start an. Database.Migrate() verwendet
+                // alle vorhandenen Migrationen.
+                Log("Applying migrations (Database.Migrate)");
+                db.Database.Migrate();
+                Log("Migrations applied");
+
+                // Import vorhandener JSON-Indexdatei in DB
+                var importer = scope.ServiceProvider.GetService<IndexImportService>();
+                if (importer != null)
+                {
+                    Log("Starting index import");
+                    importer.ImportIfNeededAsync().GetAwaiter().GetResult();
+                    Log("Index import finished");
+                }
+                else
+                {
+                    Log("No IndexImportService registered");
+                }
+
+                // Hauptfenster erstellen und anzeigen (StartupUri wurde entfernt)
+                Log("Creating MainWindow");
+                MainWindow? main = null;
+                try
+                {
+                    main = new MainWindow();
+                    main.Show();
+                    Log("MainWindow shown");
+                }
+                catch (Exception mwEx)
+                {
+                    Log($"Fehler beim Erstellen des Hauptfensters: {mwEx.Message}");
+                }
+
+                // Migrationen und Import asynchron im Hintergrund ausführen, damit die UI nicht hängt
+                _ = System.Threading.Tasks.Task.Run(async () =>
+                {
+                    try
+                    {
+                        using var bgScope = _serviceProvider.CreateScope();
+                        var bgDb = bgScope.ServiceProvider.GetRequiredService<R10PhotoContext>();
+                        Log("Background: Applying migrations (Database.MigrateAsync)");
+                        await bgDb.Database.MigrateAsync().ConfigureAwait(false);
+                        Log("Background: Migrations applied");
+
+                        var bgImporter = bgScope.ServiceProvider.GetService<IndexImportService>();
+                        if (bgImporter != null)
+                        {
+                            Log("Background: Starting index import");
+                            await bgImporter.ImportIfNeededAsync().ConfigureAwait(false);
+                            Log("Background: Index import finished");
+                        }
+                        else
+                        {
+                            Log("Background: No IndexImportService registered");
+                        }
+                    }
+                    catch (Exception bgEx)
+                    {
+                        Log($"Background error: {bgEx}");
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                // Bei Fehlern nur protokollieren, App soll weiter starten
+                Log($"DB initialisierung fehlgeschlagen: {ex.Message}");
+            }
+        }
+    }
+}

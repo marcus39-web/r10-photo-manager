@@ -13,52 +13,54 @@
             <!-- Grosse Vorschau -->
         </Grid.ColumnDefinitions>
 
-        <!-- SUCHFELD OBEN -->
-        <DockPanel Grid.ColumnSpan="3" LastChildFill="False" Margin="0 0 0 20">
-            <TextBox x:Name="SearchBox"
-                     Width="400"
-                     Height="35"
-                     FontSize="18"
-                     Margin="0 0 10 0"
-                     VerticalContentAlignment="Center" />
-
-            <Button Content="Suchen"
-                    Width="120"
-                    Height="35"
-                    Background="#2ECC71"
-                    Foreground="White"
-                    FontSize="18"
-                    Click="SearchButton_Click"/>
-        </DockPanel>
+        <!-- Suchfeld entfernt auf Wunsch des Benutzers -->
 
         <!-- FILTER LINKS -->
         <StackPanel Grid.Column="0" Margin="0 60 20 0">
             <TextBlock Text="Filter" FontSize="22" Margin="0 0 0 10"/>
 
+            <!-- Bibliothek-Auswahl (z.B. 01_Bibothek_JPG) -->
             <ComboBox x:Name="FolderFilter"
                       FontSize="18"
                       Margin="0 10 0 0"
                       SelectionChanged="FolderFilter_SelectionChanged"/>
 
+            <!-- Baumansicht der Unterordner der gewählten Bibliothek -->
+            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                <Button x:Name="FolderBackButton" Content="Zurück" Width="80" Height="28" Click="FolderBackButton_Click" Margin="0,0,8,0" />
+                <TextBlock Text="Ordner" VerticalAlignment="Center" FontSize="14" />
+            </StackPanel>
+            <Border BorderThickness="1" BorderBrush="#DDD" Margin="0,8,0,0" Height="260">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <TreeView x:Name="FolderTree" SelectedItemChanged="FolderTree_SelectedItemChanged" />
+                </ScrollViewer>
+            </Border>
+
             <ComboBox x:Name="CategoryFilter"
                       FontSize="18"
-                      Margin="0 10 0 0"/>
+                      Margin="0 10 0 0"
+                      SelectionChanged="Filter_Changed"/>
 
             <ComboBox x:Name="RawJpgFilter"
                       FontSize="18"
-                      Margin="0 10 0 0"/>
+                      Margin="0 10 0 0"
+                      SelectionChanged="Filter_Changed"/>
 
             <ComboBox x:Name="SeriesFilter"
                       FontSize="18"
-                      Margin="0 10 0 0"/>
-
-            <ComboBox x:Name="DateFilter"
-                      FontSize="18"
-                      Margin="0 10 0 0"/>
+                      Margin="0 10 0 0"
+                      SelectionChanged="Filter_Changed"/>
+            <!-- Datum-Filter als Zeitraum -->
+            <StackPanel Orientation="Horizontal" Margin="0 10 0 0">
+                <DatePicker x:Name="DateFromPicker" Width="120" SelectedDateChanged="Filter_Changed" />
+                <TextBlock Text="–" VerticalAlignment="Center" Margin="6,0" />
+                <DatePicker x:Name="DateToPicker" Width="120" SelectedDateChanged="Filter_Changed" />
+            </StackPanel>
 
             <ComboBox x:Name="FavoritesFilter"
                       FontSize="18"
-                      Margin="0 10 0 0"/>
+                      Margin="0 10 0 0"
+                      SelectionChanged="Filter_Changed"/>
         </StackPanel>
 
         <!-- TREFFERLISTE MIT KLEINEN THUMBNAILS -->
@@ -69,10 +71,15 @@
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal" Margin="5">
+                        <StackPanel.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Umbenennen" Click="RenameMenu_Click" />
+                            </ContextMenu>
+                        </StackPanel.ContextMenu>
                         <Image Source="{Binding Thumbnail}" Width="80" Height="80" Margin="0 0 10 0"/>
                         <StackPanel>
-                            <TextBlock Text="{Binding FileName}" FontSize="18"/>
-                            <TextBlock Text="{Binding Category}" FontSize="14" Foreground="#555"/>
+                            <TextBlock Text="{Binding DisplayName}" FontSize="18"/>
+                            <TextBlock Text="{Binding ParentFolder}" FontSize="14" Foreground="#555"/>
                         </StackPanel>
                     </StackPanel>
                 </DataTemplate>
@@ -93,8 +100,11 @@
                        Stretch="Uniform"
                        Margin="0 0 0 20"/>
 
-                <TextBlock x:Name="PreviewFileName" FontSize="20" Margin="0 0 0 10"/>
-                <TextBlock x:Name="PreviewCategory" FontSize="16" Margin="0 0 0 10"/>
+                <TextBlock x:Name="PreviewFileName" FontSize="20" Margin="0 0 0 5"/>
+                <StackPanel Orientation="Horizontal" Margin="0 0 0 10">
+                    <TextBlock x:Name="PreviewCategory" FontSize="16" VerticalAlignment="Center" />
+                    <Button x:Name="RenameButton" Content="Namen ändern" Width="120" Height="28" Margin="10 0 0 0" Click="RenameButton_Click" />
+                </StackPanel>
                 <TextBlock x:Name="PreviewPath" FontSize="14" Foreground="#555"/>
 
                 <TextBox x:Name="PreviewNotes"

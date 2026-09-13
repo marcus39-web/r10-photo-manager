@@ -34,14 +34,8 @@ namespace R10CSharp.Pages
                 ScanProgress.Value = 0;
 
                 // Anzahl der Dateien für die Fortschrittsanzeige ermitteln
-                var files = Directory.EnumerateFiles(root, "*.*", SearchOption.AllDirectories)
-                    .Where(f => f.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)
-                             || f.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)
-                             || f.EndsWith(".png", StringComparison.OrdinalIgnoreCase)
-                             || f.EndsWith(".cr2", StringComparison.OrdinalIgnoreCase)
-                             || f.EndsWith(".nef", StringComparison.OrdinalIgnoreCase)
-                             || f.EndsWith(".arw", StringComparison.OrdinalIgnoreCase))
-                    .ToArray();
+                var include = settings?.IncludeFolders;
+                var files = FileScanner.GetImageFiles(root, include).ToArray();
 
                 var total = files.Length;
                 if (total == 0)

@@ -23,6 +23,12 @@ namespace R10CSharp.Services
             return thumbs;
         }
 
+        // Öffentlich: Erzeuge/aktualisiere ein Thumbnail für eine Datei und liefere den Pfad zurück
+        public static string? RegenerateThumbnail(string imagePath)
+        {
+            return CreateThumbnail(imagePath);
+        }
+
         private static string? CreateThumbnail(string imagePath)
         {
             try
@@ -120,6 +126,7 @@ namespace R10CSharp.Services
                     {
                         FileName = fi.Name,
                         FilePath = fi.FullName,
+                        ParentFolder = fi.Directory?.Name ?? string.Empty,
                         RawOrJpg = RawExtensions.Any(re => fi.Extension.Equals(re, StringComparison.OrdinalIgnoreCase)) ? "RAW" : "JPG",
                         Category = string.Empty,
                         Series = string.Empty,
@@ -162,6 +169,7 @@ namespace R10CSharp.Services
                 {
                     FileName = fi.Name,
                     FilePath = fi.FullName,
+                    ParentFolder = fi.Directory?.Name ?? string.Empty,
                     RawOrJpg = RawExtensions.Any(re => fi.Extension.Equals(re, StringComparison.OrdinalIgnoreCase)) ? "RAW" : "JPG",
                     Category = string.Empty,
                     Series = string.Empty,
@@ -190,15 +198,24 @@ namespace R10CSharp.Services
         {
             try
             {
-                if (!File.Exists(filePath)) return [];
+                if (!File.Exists(filePath)) return Enumerable.Empty<PhotoIndexEntry>().ToList();
                 var json = File.ReadAllText(filePath);
-                if (string.IsNullOrWhiteSpace(json)) return [];
-                return JsonSerializer.Deserialize<List<PhotoIndexEntry>>(json) ?? [];
+                if (string.IsNullOrWhiteSpace(json)) return Enumerable.Empty<PhotoIndexEntry>().ToList();
+                var list = JsonSerializer.Deserialize<List<PhotoIndexEntry>>(json) ?? new List<PhotoIndexEntry>();
+
+                // Beim Laden des Index unerwünschte Pfade (Google/iCloud/Apple) filtern
+                var filtered = list.Where(i => i.FilePath != null
+                                               && !i.FilePath.ToLowerInvariant().Contains("google")
+                                               && !i.FilePath.ToLowerInvariant().Contains("icloud")
+                                               && !i.FilePath.ToLowerInvariant().Contains("apple"))
+                                     .ToList();
+
+                return filtered;
             }
             catch
             {
                 // Bei Fehlern beim Einlesen/Deserialisieren einen leeren Index zurückgeben
-                return [];
+                return Enumerable.Empty<PhotoIndexEntry>().ToList();
             }
         }
     }
