@@ -15,7 +15,7 @@ namespace R10CSharp.Services
         private const int ThumbnailWidth = 200;
         private const int ThumbnailHeight = 200;
 
-        private string EnsureThumbnailsFolder(string rootPath)
+        private static string EnsureThumbnailsFolder()
         {
             var dataDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
             var thumbs = Path.Combine(dataDir, "Thumbnails");
@@ -23,24 +23,21 @@ namespace R10CSharp.Services
             return thumbs;
         }
 
-        private string? CreateThumbnail(string imagePath)
+        private static string? CreateThumbnail(string imagePath)
         {
             try
             {
                 // Verwende WPF-Imaging, um ein verkleinertes Vorschaubild zu erstellen
-                var thumbs = EnsureThumbnailsFolder(Path.GetDirectoryName(imagePath) ?? string.Empty);
+                var thumbs = EnsureThumbnailsFolder();
                 var fileName = Path.GetFileNameWithoutExtension(imagePath);
 
                 // Erzeuge einen kurzen Hash aus dem vollständigen Pfad, damit Thumbnails
                 // für Dateien mit identischem Dateinamen in unterschiedlichen Ordnern
                 // nicht kollidieren.
                 string hashHex;
-                using (var sha = SHA1.Create())
-                {
-                    var data = Encoding.UTF8.GetBytes(imagePath.ToLowerInvariant());
-                    var hash = sha.ComputeHash(data);
-                    hashHex = BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant().Substring(0, 8);
-                }
+                var data = Encoding.UTF8.GetBytes(imagePath.ToLowerInvariant());
+                var hash = SHA1.HashData(data);
+                hashHex = BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant()[..8];
 
                 var thumbFileName = fileName + "_" + hashHex + "_thumb.jpg";
                 var thumbPath = Path.Combine(thumbs, thumbFileName);
@@ -64,8 +61,10 @@ namespace R10CSharp.Services
                 bitmap.EndInit();
                 bitmap.Freeze();
 
-                var encoder = new System.Windows.Media.Imaging.JpegBitmapEncoder();
-                encoder.QualityLevel = 75;
+                var encoder = new System.Windows.Media.Imaging.JpegBitmapEncoder
+                {
+                    QualityLevel = 75
+                };
                 encoder.Frames.Add(System.Windows.Media.Imaging.BitmapFrame.Create(bitmap));
 
                 using (var fs = new FileStream(thumbPath, FileMode.Create))
@@ -88,11 +87,8 @@ namespace R10CSharp.Services
             var result = new List<PhotoIndexEntry>();
             if (!Directory.Exists(rootPath)) return result;
 
-            var files = Directory.EnumerateFiles(rootPath, "*.*", SearchOption.AllDirectories)
-                .Where(f => f.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)
-                         || f.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)
-                         || RawExtensions.Any(re => f.EndsWith(re, StringComparison.OrdinalIgnoreCase))
-                         || f.EndsWith(".png", StringComparison.OrdinalIgnoreCase));
+            // Use FileScanner and respect optional IncludeFolders from settings
+            _ = SettingsService.Load().IncludeFolders;
             // Standard-Parallelität: 4
             return await BuildIndexAsyncParallel(rootPath, 4, progress, ct);
         }
@@ -103,10 +99,11 @@ namespace R10CSharp.Services
             var result = new List<PhotoIndexEntry>();
             if (!Directory.Exists(rootPath)) return result;
 
-            var files = Directory.EnumerateFiles(rootPath, "*.*", SearchOption.AllDirectories)
-                .Where(f => f.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)
+            var include = SettingsService.Load().IncludeFolders;
+            var files = FileScanner.GetImageFiles(rootPath, include)
+                .Where(f => RawExtensions.Any(re => f.EndsWith(re, StringComparison.OrdinalIgnoreCase))
+                         || f.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)
                          || f.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)
-                         || RawExtensions.Any(re => f.EndsWith(re, StringComparison.OrdinalIgnoreCase))
                          || f.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
                 .ToArray();
 
@@ -182,26 +179,26 @@ namespace R10CSharp.Services
             return result;
         }
 
-        public void SaveIndex(List<PhotoIndexEntry> index, string filePath)
+        public static void SaveIndex(List<PhotoIndexEntry> index, string filePath)
         {
             var options = new JsonSerializerOptions { WriteIndented = true };
             var json = JsonSerializer.Serialize(index, options);
             File.WriteAllText(filePath, json);
         }
 
-        public List<PhotoIndexEntry> LoadIndex(string filePath)
+        public static List<PhotoIndexEntry> LoadIndex(string filePath)
         {
             try
             {
-                if (!File.Exists(filePath)) return new List<PhotoIndexEntry>();
+                if (!File.Exists(filePath)) return [];
                 var json = File.ReadAllText(filePath);
-                if (string.IsNullOrWhiteSpace(json)) return new List<PhotoIndexEntry>();
-                return JsonSerializer.Deserialize<List<PhotoIndexEntry>>(json) ?? new List<PhotoIndexEntry>();
+                if (string.IsNullOrWhiteSpace(json)) return [];
+                return JsonSerializer.Deserialize<List<PhotoIndexEntry>>(json) ?? [];
             }
             catch
             {
                 // Bei Fehlern beim Einlesen/Deserialisieren einen leeren Index zurückgeben
-                return new List<PhotoIndexEntry>();
+                return [];
             }
         }
     }

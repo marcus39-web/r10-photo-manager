@@ -10,11 +10,17 @@ namespace R10CSharp.Services
         public string ArchivePath { get; set; } = @"D:\\10_Fotoarchiv";
         public string IndexPath { get; set; } = @"D:\\11_Foto_App\\R10CSharp\\Data\\index.json";
         public string ConnectionString { get; set; } = @"Server=(localdb)\\MSSQLLocalDB;Database=R10PhotoDb;Trusted_Connection=True;";
+        // Optional: list of subfolders (names) inside the archive root to include when scanning.
+        // If null or empty, all subfolders are scanned.
+        public string[]? IncludeFolders { get; set; } = null;
     }
 
     public static class SettingsService
     {
         private static readonly string ConfigPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "config.json");
+
+        // Shared JsonSerializerOptions for consistent serialization and to avoid repeated allocations
+        public static readonly JsonSerializerOptions SerializerOptions = new JsonSerializerOptions { WriteIndented = true };
 
         public static AppSettings Load()
         {
@@ -40,7 +46,7 @@ namespace R10CSharp.Services
         {
             var dir = Path.GetDirectoryName(ConfigPath);
             if (!Directory.Exists(dir)) Directory.CreateDirectory(dir!);
-            var json = JsonSerializer.Serialize(settings, new JsonSerializerOptions { WriteIndented = true });
+            var json = JsonSerializer.Serialize(settings, SerializerOptions);
             File.WriteAllText(ConfigPath, json);
         }
     }

@@ -10,16 +10,11 @@ using R10CSharp.Models;
 
 namespace R10CSharp.Services
 {
-    public class IndexImportService
+    public class IndexImportService(R10PhotoContext db, AppSettings settings)
     {
-        private readonly R10PhotoContext _db;
-        private readonly AppSettings _settings;
-
-        public IndexImportService(R10PhotoContext db, AppSettings settings)
-        {
-            _db = db;
-            _settings = settings;
-        }
+        private static readonly JsonSerializerOptions ImportJsonOptions = new() { PropertyNameCaseInsensitive = true };
+        private readonly R10PhotoContext _db = db;
+        private readonly AppSettings _settings = settings;
 
         /// <summary>
         /// Importiert vorhandene JSON-Indexdatei in die Datenbank, falls Einträge noch nicht vorhanden sind.
@@ -37,8 +32,7 @@ namespace R10CSharp.Services
                 }
 
                 var json = await File.ReadAllTextAsync(path).ConfigureAwait(false);
-                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-                var entries = JsonSerializer.Deserialize<List<PhotoIndexEntry>>(json, options);
+                var entries = JsonSerializer.Deserialize<List<PhotoIndexEntry>>(json, ImportJsonOptions);
                 if (entries == null || entries.Count == 0)
                 {
                     Console.WriteLine("IndexImport: index.json ist leer.");

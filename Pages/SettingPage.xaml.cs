@@ -7,7 +7,7 @@ namespace R10CSharp.Pages
 {
     public partial class SettingsPage : Page
     {
-        private AppSettings _settings = new AppSettings();
+        private readonly AppSettings _settings = new();
 
         public SettingsPage()
         {

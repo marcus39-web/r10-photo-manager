@@ -74,7 +74,7 @@ namespace R10CSharp.Pages
                 });
 
                 var index = await builder.BuildIndexAsyncParallel(root, parallelism, progress, _cts.Token);
-                builder.SaveIndex(index, indexPath);
+                IndexBuilder.SaveIndex(index, indexPath);
 
                 ScanStatus.Text = $"Scan abgeschlossen. {index.Count} Dateien gefunden.";
             }

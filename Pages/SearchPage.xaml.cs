@@ -10,8 +10,8 @@ namespace R10CSharp.Pages
 {
     public partial class SearchPage : Page
     {
-        private List<PhotoIndexEntry> _index;
-        private SearchEngine _engine;
+        private readonly List<PhotoIndexEntry> _index;
+        private readonly SearchEngine _engine;
 
         public SearchPage()
         {
@@ -23,18 +23,18 @@ namespace R10CSharp.Pages
 
             if (File.Exists(indexPath))
             {
-                _index = builder.LoadIndex(indexPath);
+                _index = IndexBuilder.LoadIndex(indexPath);
             }
             else
             {
                 var root = settings?.ArchivePath ?? @"D:\10_Fotoarchiv";
                 _index = builder.BuildIndex(root);
-                builder.SaveIndex(_index, indexPath);
+                IndexBuilder.SaveIndex(_index, indexPath);
             }
 
             // Nur Einträge aus dem Canon_R10_Bilder-Hauptordner berücksichtigen
             var mainFolder = "Canon_R10_Bilder";
-            _index = _index.Where(i => i.FilePath != null && i.FilePath.IndexOf(mainFolder, System.StringComparison.OrdinalIgnoreCase) >= 0).ToList();
+            _index = [.. _index.Where(i => i.FilePath != null && i.FilePath.Contains(mainFolder, System.StringComparison.OrdinalIgnoreCase))];
 
             _engine = new SearchEngine(_index);
 
@@ -43,7 +43,7 @@ namespace R10CSharp.Pages
 
             // Filter-Comboboxen aus dem Index füllen
             var categories = _index.Select(i => i.Category).Where(s => !string.IsNullOrWhiteSpace(s)).Distinct().OrderBy(s => s).ToList();
-            if (categories.Any())
+            if (categories.Count != 0)
             {
                 CategoryFilter.ItemsSource = categories;
             }
@@ -55,7 +55,7 @@ namespace R10CSharp.Pages
             }
 
             var rawOrJpg = _index.Select(i => i.RawOrJpg).Where(s => !string.IsNullOrWhiteSpace(s)).Distinct().OrderBy(s => s).ToList();
-            if (rawOrJpg.Any())
+            if (rawOrJpg.Count != 0)
             {
                 RawJpgFilter.ItemsSource = rawOrJpg;
                 // Default to JPG to show camera JPEGs
@@ -63,7 +63,7 @@ namespace R10CSharp.Pages
             }
 
             var series = _index.Select(i => i.Series).Where(s => !string.IsNullOrWhiteSpace(s)).Distinct().OrderBy(s => s).ToList();
-            if (series.Any()) SeriesFilter.ItemsSource = series;
+            if (series.Count != 0) SeriesFilter.ItemsSource = series;
             else
             {
                 SeriesFilter.ItemsSource = new List<string> { "(keine)" };
@@ -75,7 +75,7 @@ namespace R10CSharp.Pages
                 .Select(i => System.IO.Path.GetDirectoryName(i.FilePath) ?? string.Empty)
                 .Select(d =>
                 {
-                    var parts = d.Split(new[] { '\\' }, System.StringSplitOptions.RemoveEmptyEntries);
+                    var parts = d.Split(separator, System.StringSplitOptions.RemoveEmptyEntries);
                     for (int p = 0; p < parts.Length; p++)
                     {
                         if (string.Equals(parts[p], "Canon_R10_Bilder", System.StringComparison.OrdinalIgnoreCase) && p + 1 < parts.Length)
@@ -90,7 +90,7 @@ namespace R10CSharp.Pages
                 .OrderBy(s => s)
                 .ToList();
 
-            if (folders.Any())
+            if (folders.Count != 0)
             {
                 FolderFilter.ItemsSource = folders;
                 // Default to first folder so user can immediately see results
@@ -109,8 +109,8 @@ namespace R10CSharp.Pages
                 if (!Directory.Exists(logDir)) Directory.CreateDirectory(logDir);
                 var logPath = Path.Combine(logDir, "app_error_log.txt");
                 File.AppendAllText(logPath, $"[SearchFilters] Loaded counts: categories={categories.Count}, rawOrJpg={rawOrJpg.Count}, series={series.Count}, folders={folders.Count}\n");
-                if (folders.Any()) File.AppendAllText(logPath, "[SearchFilters] folders sample: " + string.Join(",", folders.Take(10)) + "\n");
-                if (rawOrJpg.Any()) File.AppendAllText(logPath, "[SearchFilters] rawOrJpg sample: " + string.Join(",", rawOrJpg) + "\n");
+                if (folders.Count != 0) File.AppendAllText(logPath, "[SearchFilters] folders sample: " + string.Join(",", folders.Take(10)) + "\n");
+                if (rawOrJpg.Count != 0) File.AppendAllText(logPath, "[SearchFilters] rawOrJpg sample: " + string.Join(",", rawOrJpg) + "\n");
             }
             catch (Exception ex)
             {
@@ -119,14 +119,16 @@ namespace R10CSharp.Pages
 
             // Datum-Filter: Jahre aus Timestamp
             var years = _index.Select(i => i.Timestamp.Year.ToString()).Distinct().OrderByDescending(y => y).ToList();
-            if (years.Any()) DateFilter.ItemsSource = years;
+            if (years.Count != 0) DateFilter.ItemsSource = years;
             else { DateFilter.ItemsSource = new List<string> { "(keine)" }; DateFilter.SelectedIndex = 0; }
 
             // Favoriten: derzeit als Platzhalter (sofern Tags/Favorites genutzt werden)
             var favs = _index.Select(i => i.Tags).Where(s => !string.IsNullOrWhiteSpace(s)).Distinct().OrderBy(s => s).ToList();
-            if (favs.Any()) FavoritesFilter.ItemsSource = favs;
+            if (favs.Count != 0) FavoritesFilter.ItemsSource = favs;
             else { FavoritesFilter.ItemsSource = new List<string> { "(keine)" }; FavoritesFilter.SelectedIndex = 0; }
         }
+
+        private static readonly char[] separator = ['\\'];
 
         // Overload: erlaubt das Starten der Seite mit einer Suchanfrage
         public SearchPage(string query) : this()
@@ -184,7 +186,7 @@ namespace R10CSharp.Pages
             }
 
             // Filter auf ausgewählten Ordner (Path.Contains)
-            var filtered = _index.Where(i => i.FilePath != null && i.FilePath.IndexOf(folder, System.StringComparison.OrdinalIgnoreCase) >= 0)
+            var filtered = _index.Where(i => i.FilePath != null && i.FilePath.Contains(folder, System.StringComparison.OrdinalIgnoreCase))
                                  .OrderByDescending(i => i.Timestamp)
                                  .ToList();
             ResultList.ItemsSource = filtered;

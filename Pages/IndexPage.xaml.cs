@@ -12,7 +12,7 @@ namespace R10CSharp.Pages
 
             var builder = new IndexBuilder();
             var indexPath = @"D:\11_Foto_App\R10CSharp\Data\index.json";
-            var index = builder.LoadIndex(indexPath);
+            var index = IndexBuilder.LoadIndex(indexPath);
 
             TotalFiles.Text = $"Gesamtanzahl Dateien: {index.Count}";
             RawCount.Text = $"RAW Dateien: {index.Count(f => f.RawOrJpg == "RAW")}";
