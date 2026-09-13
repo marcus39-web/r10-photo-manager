@@ -1,0 +1,11 @@
+root = true
+
+[*.cs]
+# Reduce noisy analyzer messages for this project to keep the IDE clean.
+dotnet_diagnostic.IDE0028.severity = none   # Collection initialization simplification
+dotnet_diagnostic.IDE0030.severity = none   # Use 'var' or target-typed new simplification
+dotnet_diagnostic.IDE0090.severity = none   # Use 'new()' simplification
+dotnet_diagnostic.CA1822.severity = none   # Mark members as static
+dotnet_diagnostic.CA1869.severity = none   # Reuse JsonSerializerOptions
+
+# You can re-enable any rule later by setting severity to suggestion/warning/error
