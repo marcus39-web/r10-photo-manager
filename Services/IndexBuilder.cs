@@ -84,7 +84,7 @@ namespace R10CSharp.Services
         public async Task<List<PhotoIndexEntry>> BuildIndexAsync(string rootPath, IProgress<PhotoIndexEntry>? progress = null, CancellationToken? cancellationToken = null)
         {
             var ct = cancellationToken ?? CancellationToken.None;
-            var result = new List<PhotoIndexEntry>();
+            List<PhotoIndexEntry> result = new();
             if (!Directory.Exists(rootPath)) return result;
 
             // Use FileScanner and respect optional IncludeFolders from settings
@@ -93,10 +93,10 @@ namespace R10CSharp.Services
             return await BuildIndexAsyncParallel(rootPath, 4, progress, ct);
         }
 
-        public async Task<List<PhotoIndexEntry>> BuildIndexAsyncParallel(string rootPath, int maxDegreeOfParallelism = 4, IProgress<PhotoIndexEntry>? progress = null, CancellationToken? cancellationToken = null)
+        public static async Task<List<PhotoIndexEntry>> BuildIndexAsyncParallel(string rootPath, int maxDegreeOfParallelism = 4, IProgress<PhotoIndexEntry>? progress = null, CancellationToken? cancellationToken = null)
         {
             var ct = cancellationToken ?? CancellationToken.None;
-            var result = new List<PhotoIndexEntry>();
+            List<PhotoIndexEntry> result = new();
             if (!Directory.Exists(rootPath)) return result;
 
             var include = SettingsService.Load().IncludeFolders;
@@ -144,9 +144,9 @@ namespace R10CSharp.Services
             return result;
         }
 
-        public List<PhotoIndexEntry> BuildIndex(string rootPath)
+        public static List<PhotoIndexEntry> BuildIndex(string rootPath)
         {
-            var result = new List<PhotoIndexEntry>();
+            List<PhotoIndexEntry> result = new();
             if (!Directory.Exists(rootPath)) return result;
 
             var files = Directory.EnumerateFiles(rootPath, "*.*", SearchOption.AllDirectories)

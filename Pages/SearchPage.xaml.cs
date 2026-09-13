@@ -28,7 +28,7 @@ namespace R10CSharp.Pages
             else
             {
                 var root = settings?.ArchivePath ?? @"D:\10_Fotoarchiv";
-                _index = builder.BuildIndex(root);
+                _index = IndexBuilder.BuildIndex(root);
                 IndexBuilder.SaveIndex(_index, indexPath);
             }
 

@@ -28,17 +28,17 @@ namespace R10CSharp.Services
             {
                 if (!File.Exists(ConfigPath))
                 {
-                    var def = new AppSettings();
+                    AppSettings def = new();
                     Save(def);
                     return def;
                 }
 
                 var json = File.ReadAllText(ConfigPath);
-                return JsonSerializer.Deserialize<AppSettings>(json) ?? new AppSettings();
+                return JsonSerializer.Deserialize<AppSettings>(json) ?? new();
             }
             catch
             {
-                return new AppSettings();
+                return new();
             }
         }
 
