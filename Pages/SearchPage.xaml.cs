@@ -18,7 +18,8 @@ namespace R10CSharp.Pages
             InitializeComponent();
 
             var builder = new IndexBuilder();
-            var indexPath = @"D:\11_Foto_App\R10CSharp\Data\index.json";
+            var settings = SettingsService.Load();
+            var indexPath = settings?.IndexPath ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "index.json");
 
             if (File.Exists(indexPath))
             {
@@ -26,7 +27,8 @@ namespace R10CSharp.Pages
             }
             else
             {
-                _index = builder.BuildIndex(@"D:\10_Fotoarchiv");
+                var root = settings?.ArchivePath ?? @"D:\10_Fotoarchiv";
+                _index = builder.BuildIndex(root);
                 builder.SaveIndex(_index, indexPath);
             }
 
@@ -110,7 +112,10 @@ namespace R10CSharp.Pages
                 if (folders.Any()) File.AppendAllText(logPath, "[SearchFilters] folders sample: " + string.Join(",", folders.Take(10)) + "\n");
                 if (rawOrJpg.Any()) File.AppendAllText(logPath, "[SearchFilters] rawOrJpg sample: " + string.Join(",", rawOrJpg) + "\n");
             }
-            catch { }
+            catch (Exception ex)
+            {
+                App.Log($"Error writing search filters log: {ex}");
+            }
 
             // Datum-Filter: Jahre aus Timestamp
             var years = _index.Select(i => i.Timestamp.Year.ToString()).Distinct().OrderByDescending(y => y).ToList();
@@ -149,15 +154,12 @@ namespace R10CSharp.Pages
             }
             catch (Exception ex)
             {
-                try
-                {
-                    var logDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
-                    if (!Directory.Exists(logDir)) Directory.CreateDirectory(logDir);
-                    var logPath = Path.Combine(logDir, "app_error_log.txt");
-                    File.AppendAllText(logPath, DateTime.Now.ToString("s") + " - Search error:\n" + ex + "\n\n");
-                }
-                catch { }
-                MessageBox.Show("Beim Ausführen der Suche ist ein Fehler aufgetreten. Details wurden ins Log geschrieben.", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+            try
+            {
+                App.Log($"Search error: {ex}");
+            }
+            catch { }
+            MessageBox.Show("Beim Ausführen der Suche ist ein Fehler aufgetreten. Details wurden ins Log geschrieben.", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

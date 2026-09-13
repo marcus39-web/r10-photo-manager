@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Security.Cryptography;
+using System.Text;
 using R10CSharp.Models;
 
 namespace R10CSharp.Services
@@ -28,7 +30,20 @@ namespace R10CSharp.Services
                 // Verwende WPF-Imaging, um ein verkleinertes Vorschaubild zu erstellen
                 var thumbs = EnsureThumbnailsFolder(Path.GetDirectoryName(imagePath) ?? string.Empty);
                 var fileName = Path.GetFileNameWithoutExtension(imagePath);
-                var thumbPath = Path.Combine(thumbs, fileName + "_thumb.jpg");
+
+                // Erzeuge einen kurzen Hash aus dem vollständigen Pfad, damit Thumbnails
+                // für Dateien mit identischem Dateinamen in unterschiedlichen Ordnern
+                // nicht kollidieren.
+                string hashHex;
+                using (var sha = SHA1.Create())
+                {
+                    var data = Encoding.UTF8.GetBytes(imagePath.ToLowerInvariant());
+                    var hash = sha.ComputeHash(data);
+                    hashHex = BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant().Substring(0, 8);
+                }
+
+                var thumbFileName = fileName + "_" + hashHex + "_thumb.jpg";
+                var thumbPath = Path.Combine(thumbs, thumbFileName);
 
                 // Falls das Thumbnail bereits existiert und neuer ist als die Quell-Datei, wiederverwenden
                 if (File.Exists(thumbPath))

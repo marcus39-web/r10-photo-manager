@@ -22,8 +22,9 @@ namespace R10CSharp.Pages
         private async void Scan_Click(object sender, RoutedEventArgs e)
         {
             var builder = new IndexBuilder();
-            var indexPath = @"D:\11_Foto_App\R10CSharp\Data\index.json";
-            var root = @"D:\10_Fotoarchiv";
+            var settings = SettingsService.Load();
+            var indexPath = settings?.IndexPath ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "index.json");
+            var root = settings?.ArchivePath ?? @"D:\10_Fotoarchiv";
 
             try
             {
@@ -56,7 +57,6 @@ namespace R10CSharp.Pages
                 var scanned = 0;
                 var sw = System.Diagnostics.Stopwatch.StartNew();
 
-                var settings = SettingsService.Load();
                 var parallelism = settings?.ThumbnailParallelism > 0 ? settings.ThumbnailParallelism : 4;
 
                 var progress = new Progress<PhotoIndexEntry>(entry =>
