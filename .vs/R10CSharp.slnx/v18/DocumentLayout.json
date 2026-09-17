@@ -1,0 +1,88 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\11_Foto_App\\R10CSharp\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{E70A3733-403A-7149-45C0-C6AAFC608C06}|R10CSharp.csproj|d:\\11_foto_app\\r10csharp\\pages\\searchpage.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E70A3733-403A-7149-45C0-C6AAFC608C06}|R10CSharp.csproj|solutionrelative:pages\\searchpage.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E70A3733-403A-7149-45C0-C6AAFC608C06}|R10CSharp.csproj|d:\\11_foto_app\\r10csharp\\pages\\searchpage.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{E70A3733-403A-7149-45C0-C6AAFC608C06}|R10CSharp.csproj|solutionrelative:pages\\searchpage.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 8,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{eefa5220-e298-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{d78612c7-9962-4b83-95d9-268046dad23a}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{40ea2e6b-2121-4bb8-a43e-c83c04b51041}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:1:0:{d212f56b-c48a-434c-a121-1c5d80b59b9f}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "SearchPage.xaml",
+              "DocumentMoniker": "D:\\11_Foto_App\\R10CSharp\\Pages\\SearchPage.xaml",
+              "RelativeDocumentMoniker": "Pages\\SearchPage.xaml",
+              "ToolTip": "D:\\11_Foto_App\\R10CSharp\\Pages\\SearchPage.xaml",
+              "RelativeToolTip": "Pages\\SearchPage.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-09-17T20:26:22.033Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "SearchPage.xaml.cs",
+              "DocumentMoniker": "D:\\11_Foto_App\\R10CSharp\\Pages\\SearchPage.xaml.cs",
+              "RelativeDocumentMoniker": "Pages\\SearchPage.xaml.cs",
+              "ToolTip": "D:\\11_Foto_App\\R10CSharp\\Pages\\SearchPage.xaml.cs",
+              "RelativeToolTip": "Pages\\SearchPage.xaml.cs",
+              "ViewState": "AgIAAJwCAAAAAAAAAAAkwK8CAAAVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-17T20:21:36.093Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{74946827-37a0-11d2-a273-00c04f8ef4ff}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{fbcae063-e2c0-4ab1-a516-996ea3dafb72}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
