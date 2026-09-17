@@ -16,4 +16,7 @@
 	  <PrivateAssets>all</PrivateAssets>
 	</PackageReference>
   </ItemGroup>
+  <ItemGroup>
+	<Resource Include="Assets\welcome.JPEG" />
+  </ItemGroup>
 </Project>

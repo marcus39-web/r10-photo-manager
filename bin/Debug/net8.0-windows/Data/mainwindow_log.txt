@@ -1,4 +1,0 @@
-[2026-09-12T22:00:19.4560799+02:00] MainWindow ctor start
-[2026-09-12T22:00:19.4897259+02:00] InitializeComponent ok
-[2026-09-12T22:00:19.4913158+02:00] Navigated to StartPage
-[2026-09-12T22:00:19.4915200+02:00] MainWindow ctor end

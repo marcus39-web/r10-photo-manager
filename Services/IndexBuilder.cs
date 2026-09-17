@@ -11,7 +11,7 @@ namespace R10CSharp.Services
 {
     public class IndexBuilder
     {
-        private static readonly string[] RawExtensions = { ".cr2", ".nef", ".arw", ".rw2", ".dng" };
+        private static readonly string[] RawExtensions = { ".cr2", ".cr3", ".nef", ".arw", ".rw2", ".dng" };
         private const int ThumbnailWidth = 200;
         private const int ThumbnailHeight = 200;
 

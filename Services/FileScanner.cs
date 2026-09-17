@@ -16,8 +16,11 @@ namespace R10CSharp.Services
                          || f.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)
                          || f.EndsWith(".png", StringComparison.OrdinalIgnoreCase)
                          || f.EndsWith(".cr2", StringComparison.OrdinalIgnoreCase)
+                         || f.EndsWith(".cr3", StringComparison.OrdinalIgnoreCase)
                          || f.EndsWith(".nef", StringComparison.OrdinalIgnoreCase)
-                         || f.EndsWith(".arw", StringComparison.OrdinalIgnoreCase));
+                         || f.EndsWith(".arw", StringComparison.OrdinalIgnoreCase)
+                         || f.EndsWith(".rw2", StringComparison.OrdinalIgnoreCase)
+                         || f.EndsWith(".dng", StringComparison.OrdinalIgnoreCase));
 
             if (includeFolderNames == null || includeFolderNames.Length == 0)
             {
@@ -37,36 +40,28 @@ namespace R10CSharp.Services
                     return true;
                 }).ToArray();
 
-                // Harte Whitelist: nur diese Ordner scannen, falls vorhanden
-                var whitelist = new[] { "01_Bibliothek_JPG", "01_Bibiothek_JPG", "02_Bibliothek_RAW", "02_Bibithek_RAW", "03_Videos", "Eingang" };
-                var chosen = filtered.Intersect(whitelist, StringComparer.OrdinalIgnoreCase).ToArray();
-                if (chosen.Length > 0)
+                // Keine starre Whitelist verwenden, damit auch abweichende
+                // Bibliotheksnamen wie RAW-Ordner mit Tippfehlern oder Korrekturen
+                // zuverlässig mitgescannt werden.
+                var preferred = filtered.Where(n =>
+                    n!.Equals("Eingang", StringComparison.OrdinalIgnoreCase)
+                    || n.StartsWith("01_", StringComparison.OrdinalIgnoreCase)
+                    || n.StartsWith("02_", StringComparison.OrdinalIgnoreCase)
+                    || n.StartsWith("03_", StringComparison.OrdinalIgnoreCase)
+                ).ToArray();
+
+                if (preferred.Length > 0)
                 {
-                    includeFolderNames = chosen;
+                    includeFolderNames = preferred;
+                }
+                else if (filtered.Length > 0)
+                {
+                    includeFolderNames = filtered;
                 }
                 else
                 {
-                    // Fallback: wie bisher, versuche bevorzugte Ordner zu erkennen
-                    var preferred = filtered.Where(n =>
-                        n!.Equals("Eingang", StringComparison.OrdinalIgnoreCase)
-                        || n.StartsWith("01_", StringComparison.OrdinalIgnoreCase)
-                        || n.StartsWith("02_", StringComparison.OrdinalIgnoreCase)
-                        || n.StartsWith("03_", StringComparison.OrdinalIgnoreCase)
-                    ).ToArray();
-
-                    if (preferred.Length > 0)
-                    {
-                        includeFolderNames = preferred;
-                    }
-                    else if (filtered.Length > 0)
-                    {
-                        includeFolderNames = filtered;
-                    }
-                    else
-                    {
-                        // Keine passenden Unterordner vorhanden -> alle Dateien zurückgeben
-                        return files;
-                    }
+                    // Keine passenden Unterordner vorhanden -> alle Dateien zurückgeben
+                    return files;
                 }
             }
 

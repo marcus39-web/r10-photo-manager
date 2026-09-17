@@ -7,7 +7,7 @@ namespace R10CSharp.Services
     public class AppSettings
     {
         public int ThumbnailParallelism { get; set; } = 4;
-        public string ArchivePath { get; set; } = @"D:\\10_Fotoarchiv";
+        public string ArchivePath { get; set; } = @"D:\\10_Fotoarchiv\\Canon_R10_Bilder";
         public string IndexPath { get; set; } = @"D:\\11_Foto_App\\R10CSharp\\Data\\index.json";
         public string ConnectionString { get; set; } = @"Server=(localdb)\\MSSQLLocalDB;Database=R10PhotoDb;Trusted_Connection=True;";
         // Optional: list of subfolders (names) inside the archive root to include when scanning.
