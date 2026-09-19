@@ -1,3 +1,4 @@
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using R10CSharp.Pages;
@@ -6,10 +7,17 @@ namespace R10CSharp
 {
     public partial class MainWindow : Window
     {
-        public MainWindow()
+        public MainWindow(string? startupFilePath = null)
         {
             InitializeComponent();
-            MainFrame.Navigate(new StartPage());
+            if (!string.IsNullOrWhiteSpace(startupFilePath) && File.Exists(startupFilePath))
+            {
+                MainFrame.Navigate(new SearchPage(Path.GetFileNameWithoutExtension(startupFilePath)));
+            }
+            else
+            {
+                MainFrame.Navigate(new StartPage());
+            }
 
             NavStart.Click += (s, e) => MainFrame.Navigate(new StartPage());
             NavSearch.Click += (s, e) => MainFrame.Navigate(new SearchPage());

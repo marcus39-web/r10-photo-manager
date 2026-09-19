@@ -39,7 +39,7 @@ Projektstruktur (Kurz)
 
 Starten / Build
 ---------------
-1. Lösung öffnen: R10CSharp.wsp in Visual Studio.
+1. Lösung öffnen: R10CSharp.slnx in Visual Studio.
 2. Build: Menü Build -> Build Solution oder dotnet build in Projektordner.
 3. Start: Debug -> Start Debugging (F5) oder Start Without Debugging (Strg+F5).
 

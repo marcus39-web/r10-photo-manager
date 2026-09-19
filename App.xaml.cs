@@ -1,9 +1,11 @@
 ﻿
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
+using R10CSharp.Services;
 
 namespace R10CSharp
 {
@@ -15,6 +17,26 @@ namespace R10CSharp
             this.DispatcherUnhandledException += OnDispatcherUnhandledException;
             AppDomain.CurrentDomain.UnhandledException += OnDomainUnhandledException;
             TaskScheduler.UnobservedTaskException += OnUnobservedTaskException;
+        }
+
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            base.OnStartup(e);
+
+            try
+            {
+                ExplorerOpenWithRegistration.EnsureRegistered();
+                WindowsAppRegistration.EnsureRegistered();
+            }
+            catch (Exception ex)
+            {
+                Log($"Shell registration failed: {ex}");
+            }
+
+            var startupFilePath = e.Args.FirstOrDefault(File.Exists);
+            var mainWindow = new MainWindow(startupFilePath);
+            MainWindow = mainWindow;
+            mainWindow.Show();
         }
 
         private void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)

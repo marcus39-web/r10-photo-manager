@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="R10CSharp.csproj" />
+	<Project Path="R10CSharp.Package\R10CSharp.Package.wapproj" />
+</Solution>

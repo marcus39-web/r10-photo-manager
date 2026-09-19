@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>R10CSharp</id>
+    <version>1.0.0</version>
+    <authors>R10CSharp</authors>
+    <description>Package Description</description>
+    <repository type="git" commit="5ed5b9bfa9aee4e77b50be1fd5c8df06536c7e87" />
+    <dependencies>
+      <group targetFramework="net8.0-windows7.0">
+        <dependency id="Microsoft.EntityFrameworkCore" version="8.0.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.EntityFrameworkCore.SqlServer" version="8.0.0" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+    <frameworkReferences>
+      <group targetFramework="net8.0-windows7.0">
+        <frameworkReference name="Microsoft.WindowsDesktop.App.WPF" />
+      </group>
+    </frameworkReferences>
+  </metadata>
+  <files>
+    <file src="D:\11_Foto_App\R10CSharp\bin\Debug\net8.0-windows\R10CSharp.runtimeconfig.json" target="lib\net8.0-windows7.0\R10CSharp.runtimeconfig.json" />
+    <file src="D:\11_Foto_App\R10CSharp\bin\Debug\net8.0-windows\R10CSharp.dll" target="lib\net8.0-windows7.0\R10CSharp.dll" />
+  </files>
+</package>

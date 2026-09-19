@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+	<OutputType>WinExe</OutputType>
+	<TargetFramework>net8.0-windows</TargetFramework>
+	<UseWPF>true</UseWPF>
+	  <ApplicationIcon>Assets\appicon.ico</ApplicationIcon>
+	  <Nullable>enable</Nullable>
+	<ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="Assets\appicon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="R10CSharp.Package\R10CSharp.Package.wapproj" />
+  </ItemGroup>
+  <ItemGroup>
+	<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
+	<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.0" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0">
+	  <PrivateAssets>all</PrivateAssets>
+	</PackageReference>
+	<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.0">
+	  <PrivateAssets>all</PrivateAssets>
+	</PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+	<Resource Include="Assets\appicon.ico">
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</Resource>
+	<Resource Include="Assets\welcome.JPEG" />
+  </ItemGroup>
+</Project>

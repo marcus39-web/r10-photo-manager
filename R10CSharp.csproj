@@ -1,11 +1,23 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
 	<OutputType>WinExe</OutputType>
 	<TargetFramework>net8.0-windows</TargetFramework>
 	<UseWPF>true</UseWPF>
-	<Nullable>enable</Nullable>
+	<ApplicationIcon>Assets\appicon.ico</ApplicationIcon>
+	  <Nullable>enable</Nullable>
 	<ImplicitUsings>enable</ImplicitUsings>
+	<DefaultItemExcludes>$(DefaultItemExcludes);publish\**;publish\**\*;*.localcopy</DefaultItemExcludes>
   </PropertyGroup>
+  <ItemGroup>
+	<None Remove="Assets\appicon.ico" />
+    <None Remove="build_log.txt" />
+    <None Remove="Data\index.json" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="R10CSharp.Packaged.slnx" />
+    <None Include="R10CSharp.PackageReady.slnx" />
+    <None Include="R10CSharp.WindowsApp.slnx" />
+  </ItemGroup>
   <ItemGroup>
 	<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
 	<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.0" />
@@ -17,6 +29,9 @@
 	</PackageReference>
   </ItemGroup>
   <ItemGroup>
+	<Resource Include="Assets\appicon.ico">
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</Resource>
 	<Resource Include="Assets\welcome.JPEG" />
   </ItemGroup>
 </Project>
