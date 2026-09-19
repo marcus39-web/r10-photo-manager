@@ -9,8 +9,15 @@ using R10CSharp.Data;
 namespace R10CSharp.Migrations
 {
     [DbContext(typeof(R10PhotoContext))]
+    /// <summary>
+    /// EF-Core-Modellsnapshot des aktuellen Datenbankmodells.
+    /// Dient EF zur Ermittlung künftiger Schemaänderungen.
+    /// </summary>
     partial class R10PhotoContextModelSnapshot : ModelSnapshot
     {
+        /// <summary>
+        /// Beschreibt das aktuell bekannte EF-Core-Modell.
+        /// </summary>
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
             modelBuilder

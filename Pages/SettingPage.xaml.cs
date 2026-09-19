@@ -5,6 +5,9 @@ using R10CSharp.Services;
 
 namespace R10CSharp.Pages
 {
+    /// <summary>
+    /// Einstellungsseite für Archivpfade und Laufzeitoptionen.
+    /// </summary>
     public partial class SettingsPage : Page
     {
         private readonly AppSettings _settings = new();
@@ -13,7 +16,7 @@ namespace R10CSharp.Pages
         {
             InitializeComponent();
 
-            // Einstellungen laden
+            // Lädt die aktuellen Einstellungen und befüllt die UI.
             _settings = SettingsService.Load();
 
             ArchivePathBox.Text = _settings.ArchivePath;
@@ -23,6 +26,9 @@ namespace R10CSharp.Pages
             ParallelismBox.Text = _settings.ThumbnailParallelism.ToString();
         }
 
+        /// <summary>
+        /// Übernimmt die Eingaben aus der UI und speichert sie dauerhaft.
+        /// </summary>
         private void Save_Click(object sender, RoutedEventArgs e)
         {
             _settings.ArchivePath = ArchivePathBox.Text;

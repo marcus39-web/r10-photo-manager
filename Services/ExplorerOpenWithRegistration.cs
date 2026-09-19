@@ -5,6 +5,10 @@ using Microsoft.Win32;
 
 namespace R10CSharp.Services
 {
+    /// <summary>
+    /// Registriert unterstützte Bilddateien für die Windows-Shell,
+    /// damit sie über "Öffnen mit" direkt in R10 Photo Manager geladen werden können.
+    /// </summary>
     internal static class ExplorerOpenWithRegistration
     {
         private const string ProgId = "R10PhotoManager.Image";
@@ -24,6 +28,7 @@ namespace R10CSharp.Services
 
             using (var progIdKey = Registry.CurrentUser.CreateSubKey($@"Software\Classes\{ProgId}"))
             {
+                // Beschreibt den Dateityp aus Sicht der Windows-Shell.
                 progIdKey?.SetValue(string.Empty, "R10 Photo Manager Bilddatei");
                 progIdKey?.SetValue("FriendlyTypeName", "R10 Photo Manager");
 
@@ -36,6 +41,7 @@ namespace R10CSharp.Services
 
             using (var appKey = Registry.CurrentUser.CreateSubKey($@"Software\Classes\Applications\{exeName}"))
             {
+                // Meldet die Anwendung als möglichen "Öffnen mit"-Kandidaten an.
                 appKey?.SetValue("FriendlyAppName", "R10 Photo Manager");
 
                 using var supportedTypesKey = appKey?.CreateSubKey("SupportedTypes");
@@ -50,6 +56,7 @@ namespace R10CSharp.Services
 
             foreach (var extension in SupportedExtensions)
             {
+                // Verknüpft jede unterstützte Erweiterung mit dem ProgId der Anwendung.
                 using var openWithProgIdsKey = Registry.CurrentUser.CreateSubKey($@"Software\Classes\{extension}\OpenWithProgids");
                 openWithProgIdsKey?.SetValue(ProgId, string.Empty, RegistryValueKind.String);
             }

@@ -9,6 +9,11 @@ using R10CSharp.Services;
 
 namespace R10CSharp
 {
+    /// <summary>
+    /// Anwendungseinstieg.
+    /// Registriert globale Exception-Handler und initialisiert die Windows-Integration
+    /// (Startmenü-/App-Suche sowie "Öffnen mit" für Bilddateien) beim Start.
+    /// </summary>
     public partial class App : Application
     {
         public App()
@@ -25,7 +30,9 @@ namespace R10CSharp
 
             try
             {
+                // Registriert Dateitypen für Explorer -> "Öffnen mit R10 Photo Manager".
                 ExplorerOpenWithRegistration.EnsureRegistered();
+                // Registriert Startmenü-/App-Suche, damit die App über die Windows-Suche besser auffindbar ist.
                 WindowsAppRegistration.EnsureRegistered();
             }
             catch (Exception ex)
@@ -33,6 +40,8 @@ namespace R10CSharp
                 Log($"Shell registration failed: {ex}");
             }
 
+            // Falls die App aus dem Explorer/der Shell mit einer Datei gestartet wurde,
+            // wird der Dateiname als initiale Suchinformation an das Hauptfenster übergeben.
             var startupFilePath = e.Args.FirstOrDefault(File.Exists);
             var mainWindow = new MainWindow(startupFilePath);
             MainWindow = mainWindow;

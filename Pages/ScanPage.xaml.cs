@@ -10,6 +10,10 @@ using R10CSharp.Models;
 
 namespace R10CSharp.Pages
 {
+    /// <summary>
+    /// Seite zum Scannen des Fotoarchivs und Erzeugen eines aktualisierten Indexes.
+    /// Zeigt Fortschritt, Dateinamen und ETA an und unterstützt Abbruch.
+    /// </summary>
     public partial class ScanPage : Page
     {
         public ScanPage()
@@ -17,8 +21,12 @@ namespace R10CSharp.Pages
             InitializeComponent();
         }
 
+        // Aktuelle Abbruchquelle für einen laufenden Scan.
         private CancellationTokenSource? _cts;
 
+        /// <summary>
+        /// Startet den Scanvorgang mit den aktuellen Einstellungen.
+        /// </summary>
         private async void Scan_Click(object sender, RoutedEventArgs e)
         {
             var builder = new IndexBuilder();
@@ -33,7 +41,7 @@ namespace R10CSharp.Pages
                 ScanStatus.Text = "Scannen läuft...";
                 ScanProgress.Value = 0;
 
-                // Anzahl der Dateien für die Fortschrittsanzeige ermitteln
+                // Anzahl der Dateien für die Fortschrittsanzeige ermitteln.
                 var include = settings?.IncludeFolders;
                 var files = FileScanner.GetImageFiles(root, include).ToArray();
 
@@ -53,12 +61,13 @@ namespace R10CSharp.Pages
 
                 var parallelism = settings?.ThumbnailParallelism > 0 ? settings.ThumbnailParallelism : 4;
 
+                // Fortschrittsobjekt aktualisiert UI-Elemente nach jedem fertigen Indexeintrag.
                 var progress = new Progress<PhotoIndexEntry>(entry =>
                 {
                     scanned++;
                     ScanProgress.Value = scanned;
                     ScanFileName.Text = entry.FileName;
-                    // ETA-Berechnung
+                    // ETA-Berechnung auf Basis der bisher durchschnittlichen Bearbeitungsdauer.
                     var elapsed = sw.Elapsed.TotalSeconds;
                     var avg = elapsed / Math.Max(1, scanned);
                     var remaining = total - scanned;
@@ -67,6 +76,7 @@ namespace R10CSharp.Pages
                     ScanStatus.Text = $"Scanne... {scanned}/{total}";
                 });
 
+                // Paralleler Indexaufbau mit Fortschrittsrückmeldung und optionalem Abbruch.
                 var index = await IndexBuilder.BuildIndexAsyncParallel(root, parallelism, progress, _cts.Token);
                 IndexBuilder.SaveIndex(index, indexPath);
 
@@ -88,6 +98,9 @@ namespace R10CSharp.Pages
             }
         }
 
+        /// <summary>
+        /// Bricht einen laufenden Scan ab.
+        /// </summary>
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
             _cts?.Cancel();

@@ -5,8 +5,14 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace R10CSharp.Migrations
 {
+    /// <summary>
+    /// Erste EF-Core-Migration zum Anlegen der Tabelle für Fotoindexeinträge.
+    /// </summary>
     public partial class InitialCreate : Migration
     {
+        /// <summary>
+        /// Legt die initiale Datenbankstruktur an.
+        /// </summary>
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -30,6 +36,9 @@ namespace R10CSharp.Migrations
                 });
         }
 
+        /// <summary>
+        /// Entfernt die initiale Datenbankstruktur wieder.
+        /// </summary>
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(

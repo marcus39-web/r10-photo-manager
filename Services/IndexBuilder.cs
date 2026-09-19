@@ -9,12 +9,19 @@ using R10CSharp.Models;
 
 namespace R10CSharp.Services
 {
+    /// <summary>
+    /// Erstellt, lädt und speichert den Fotoindex.
+    /// Zusätzlich werden Vorschaubilder erzeugt, damit die Suche und Anzeige schneller reagieren.
+    /// </summary>
     public class IndexBuilder
     {
         private static readonly string[] RawExtensions = { ".cr2", ".cr3", ".nef", ".arw", ".rw2", ".dng" };
         private const int ThumbnailWidth = 200;
         private const int ThumbnailHeight = 200;
 
+        /// <summary>
+        /// Stellt sicher, dass das Thumbnail-Zielverzeichnis vorhanden ist.
+        /// </summary>
         private static string EnsureThumbnailsFolder()
         {
             var dataDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
@@ -23,12 +30,18 @@ namespace R10CSharp.Services
             return thumbs;
         }
 
-        // Öffentlich: Erzeuge/aktualisiere ein Thumbnail für eine Datei und liefere den Pfad zurück
+        /// <summary>
+        /// Erzeugt oder aktualisiert ein Thumbnail für eine bestimmte Bilddatei.
+        /// </summary>
         public static string? RegenerateThumbnail(string imagePath)
         {
             return CreateThumbnail(imagePath);
         }
 
+        /// <summary>
+        /// Erzeugt ein JPEG-Thumbnail für eine Bilddatei.
+        /// Bereits aktuelle Vorschaubilder werden wiederverwendet.
+        /// </summary>
         private static string? CreateThumbnail(string imagePath)
         {
             try
@@ -87,18 +100,24 @@ namespace R10CSharp.Services
             }
         }
 
+        /// <summary>
+        /// Asynchroner Komforteinstieg für den Indexaufbau mit Standardparallelität.
+        /// </summary>
         public async Task<List<PhotoIndexEntry>> BuildIndexAsync(string rootPath, IProgress<PhotoIndexEntry>? progress = null, CancellationToken? cancellationToken = null)
         {
             var ct = cancellationToken ?? CancellationToken.None;
             List<PhotoIndexEntry> result = new();
             if (!Directory.Exists(rootPath)) return result;
 
-            // Use FileScanner and respect optional IncludeFolders from settings
+            // Verwendet FileScanner und berücksichtigt optionale IncludeFolders aus den Einstellungen.
             _ = SettingsService.Load().IncludeFolders;
-            // Standard-Parallelität: 4
+            // Standard-Parallelität: 4.
             return await BuildIndexAsyncParallel(rootPath, 4, progress, ct);
         }
 
+        /// <summary>
+        /// Baut den Index parallel auf und meldet einzelne Fortschrittseinträge an die UI zurück.
+        /// </summary>
         public static async Task<List<PhotoIndexEntry>> BuildIndexAsyncParallel(string rootPath, int maxDegreeOfParallelism = 4, IProgress<PhotoIndexEntry>? progress = null, CancellationToken? cancellationToken = null)
         {
             var ct = cancellationToken ?? CancellationToken.None;
@@ -113,6 +132,7 @@ namespace R10CSharp.Services
                          || f.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
                 .ToArray();
 
+            // Semaphore begrenzt die gleichzeitige Thumbnail-Erzeugung, damit I/O und Speicher stabil bleiben.
             using var semaphore = new SemaphoreSlim(maxDegreeOfParallelism);
 
             var tasks = files.Select(async f =>
@@ -121,6 +141,7 @@ namespace R10CSharp.Services
                 await semaphore.WaitAsync(ct);
                 try
                 {
+                    // Erstellt den eigentlichen Indexeintrag aus Dateisystemdaten.
                     var fi = new FileInfo(f);
                     var entry = new PhotoIndexEntry
                     {
@@ -134,6 +155,7 @@ namespace R10CSharp.Services
                         Tags = string.Empty
                     };
 
+                    // Thumbnail-Erstellung wird ausgelagert, damit die Aufruferoberfläche responsiv bleibt.
                     var thumb = await Task.Run(() => CreateThumbnail(fi.FullName), ct);
                     if (!string.IsNullOrWhiteSpace(thumb)) entry.Thumbnail = thumb!;
 
@@ -151,11 +173,16 @@ namespace R10CSharp.Services
             return result;
         }
 
+        /// <summary>
+        /// Einfache synchrone Variante des Indexaufbaus.
+        /// Wird vor allem dort genutzt, wo kein asynchroner Workflow benötigt wird.
+        /// </summary>
         public static List<PhotoIndexEntry> BuildIndex(string rootPath)
         {
             List<PhotoIndexEntry> result = new();
             if (!Directory.Exists(rootPath)) return result;
 
+            // Direkter rekursiver Dateidurchlauf für den synchronen Neuaufbau.
             var files = Directory.EnumerateFiles(rootPath, "*.*", SearchOption.AllDirectories)
                 .Where(f => f.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)
                          || f.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)
@@ -187,6 +214,9 @@ namespace R10CSharp.Services
             return result;
         }
 
+        /// <summary>
+        /// Speichert den Index formatiert als JSON-Datei.
+        /// </summary>
         public static void SaveIndex(List<PhotoIndexEntry> index, string filePath)
         {
             var options = new JsonSerializerOptions { WriteIndented = true };
@@ -194,6 +224,10 @@ namespace R10CSharp.Services
             File.WriteAllText(filePath, json);
         }
 
+        /// <summary>
+        /// Lädt den Index aus einer JSON-Datei.
+        /// Fehlerhafte oder leere Dateien führen bewusst zu einem leeren Ergebnis statt zu einer Ausnahme.
+        /// </summary>
         public static List<PhotoIndexEntry> LoadIndex(string filePath)
         {
             try

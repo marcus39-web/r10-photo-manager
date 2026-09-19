@@ -11,12 +11,17 @@ using R10CSharp.Services;
 
 namespace R10CSharp.Pages
 {
+    /// <summary>
+    /// Suchseite der Anwendung.
+    /// Zentraler Einstieg für die Fotosuche über Indexdaten, UI-Filter und Shell-/Windows-Übergaben.
+    /// </summary>
     public partial class SearchPage : Page
     {
         private const string RawLibraryName = "02_Bibiothek_RAW";
         private const string LegacyRawLibraryName = "02_Bibithek_RAW";
         private readonly List<PhotoIndexEntry> _index = new List<PhotoIndexEntry>();
         private readonly SearchEngine _engine;
+        // Merkt sich einen im Ordnerbaum selektierten relativen Unterpfad für die Ergebnisfilterung.
         private string _currentFolderRelativePath = string.Empty;
 
         public SearchPage()
@@ -33,7 +38,8 @@ namespace R10CSharp.Pages
                 _index = new List<PhotoIndexEntry>();
             }
 
-            // Nur Einträge aus dem Canon_R10_Bilder-Hauptordner berücksichtigen (falls vorhanden)
+            // Nur Einträge aus dem Canon_R10_Bilder-Hauptordner berücksichtigen (falls vorhanden).
+            // Dadurch bleibt die Suche auf den eigentlichen Foto-Bestand fokussiert.
             try
             {
                 var mainFolder = "Canon_R10_Bilder";
@@ -44,7 +50,7 @@ namespace R10CSharp.Pages
             }
             catch { }
 
-            // Build and show folder tree for deeper navigation will be invoked after folders are populated
+            // Der Suchkern arbeitet auf dem aktuell geladenen JSON-Index im Arbeitsspeicher.
 
             _engine = new SearchEngine(_index ?? new List<PhotoIndexEntry>());
 
@@ -97,7 +103,9 @@ namespace R10CSharp.Pages
 
         private static readonly char[] separator = new[] { '\\' };
 
-        // Overload: erlaubt das Starten der Seite mit einer Suchanfrage
+        // Erlaubt das direkte Öffnen der Seite mit einem initialen Suchbegriff.
+        // Das ist besonders wichtig für die Windows-/Shell-Integration:
+        // MainWindow kann hiermit einen aus Explorer oder App-Suche abgeleiteten Begriff direkt übergeben.
         public SearchPage(string query) : this()
         {
             if (!string.IsNullOrWhiteSpace(query))
@@ -376,6 +384,11 @@ namespace R10CSharp.Pages
         {
             try
             {
+                // Zentrale Suchpipeline:
+                // 1. Freitext-/Metadatenfilter über SearchEngine
+                // 2. Datumsfilter
+                // 3. Bibliotheks- und Unterordnerfilter
+                // 4. Sortierung nach Zeitstempel
                 var category = GetComboValue(CategoryFilter);
                 var rawOrJpg = GetComboValue(RawJpgFilter);
                 var series = GetComboValue(SeriesFilter);

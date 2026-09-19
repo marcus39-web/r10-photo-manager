@@ -6,9 +6,14 @@ using Microsoft.Win32;
 
 namespace R10CSharp.Services
 {
+    /// <summary>
+    /// Registriert die Anwendung bei Windows, damit sie im Startmenü, in der Windows-App-Suche
+    /// und in der Deinstallationsliste sauber erscheint.
+    /// </summary>
     internal static class WindowsAppRegistration
     {
         private const string AppName = "R10 Photo Manager";
+        // Alias für die Windows-Suche. So kann die App auch über einen kurzen technischen Namen gefunden werden.
         private const string SearchAlias = "R10CSharp";
         private const string Publisher = "Marcus39Web";
         private const string UninstallKeyName = "R10PhotoManager";
@@ -46,8 +51,11 @@ namespace R10CSharp.Services
 
             try
             {
+                // Standard-Startmenüeintrag im eigenen Ordner.
                 CreateShortcut(shell, shortcutPath, exePath, iconPath, AppName);
+                // Zusätzlicher Eintrag direkt im Programme-Stamm für bessere Sichtbarkeit.
                 CreateShortcut(shell, rootShortcutPath, exePath, iconPath, AppName);
+                // Alias-Verknüpfung: verbessert die Auffindbarkeit über die Windows-App-Suche.
                 CreateShortcut(shell, aliasShortcutPath, exePath, iconPath, $"{AppName} ({SearchAlias})");
                 NotifyShellStartMenuChanged(programsRoot);
             }
@@ -117,6 +125,7 @@ namespace R10CSharp.Services
 
         private static void EnsureUninstallEntry(string exePath, string installDir, string iconPath)
         {
+            // Sorgt dafür, dass Windows die App als installierte Anwendung kennt.
             using var key = Registry.CurrentUser.CreateSubKey($@"Software\Microsoft\Windows\CurrentVersion\Uninstall\{UninstallKeyName}");
             if (key == null) return;
 
@@ -133,6 +142,7 @@ namespace R10CSharp.Services
         private static void EnsureAppPath(string exePath)
         {
             var exeName = Path.GetFileName(exePath);
+            // App Paths erlaubt Windows, die EXE samt Suchpfad zuverlässig aufzulösen.
             using var key = Registry.CurrentUser.CreateSubKey($@"Software\Microsoft\Windows\CurrentVersion\App Paths\{exeName}");
             if (key == null) return;
 

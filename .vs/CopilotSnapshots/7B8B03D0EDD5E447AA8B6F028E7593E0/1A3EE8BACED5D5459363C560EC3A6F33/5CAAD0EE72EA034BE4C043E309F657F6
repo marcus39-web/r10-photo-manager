@@ -1,0 +1,725 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media.Imaging;
+using R10CSharp.Models;
+using Microsoft.VisualBasic;
+using R10CSharp.Services;
+
+namespace R10CSharp.Pages
+{
+    public partial class SearchPage : Page
+    {
+        private const string RawLibraryName = "02_Bibiothek_RAW";
+        private const string LegacyRawLibraryName = "02_Bibithek_RAW";
+        private readonly List<PhotoIndexEntry> _index = new List<PhotoIndexEntry>();
+        private readonly SearchEngine _engine;
+        private string _currentFolderRelativePath = string.Empty;
+
+        public SearchPage()
+        {
+            InitializeComponent();
+            var settings = SettingsService.Load();
+            var indexPath = settings?.IndexPath ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "index.json");
+            if (File.Exists(indexPath))
+            {
+                _index = IndexBuilder.LoadIndex(indexPath);
+            }
+            else
+            {
+                _index = new List<PhotoIndexEntry>();
+            }
+
+            // Nur Einträge aus dem Canon_R10_Bilder-Hauptordner berücksichtigen (falls vorhanden)
+            try
+            {
+                var mainFolder = "Canon_R10_Bilder";
+                if (_index != null)
+                {
+                    _index = _index.Where(i => i.FilePath != null && i.FilePath.Contains(mainFolder, StringComparison.OrdinalIgnoreCase)).ToList();
+                }
+            }
+            catch { }
+
+            // Build and show folder tree for deeper navigation will be invoked after folders are populated
+
+            _engine = new SearchEngine(_index ?? new List<PhotoIndexEntry>());
+
+            // Ergebnisliste initial befüllen (neueste zuerst)
+            ResultList.ItemsSource = (_index ?? Enumerable.Empty<PhotoIndexEntry>()).OrderByDescending(i => i.Timestamp).ToList();
+
+            // Filter-Comboboxen aus dem Index füllen
+            var categories = (_index ?? Enumerable.Empty<PhotoIndexEntry>()).Select(i => i.Category).Where(s => !string.IsNullOrWhiteSpace(s)).Distinct().OrderBy(s => s).ToList();
+            CategoryFilter.ItemsSource = categories.Count != 0 ? categories : new List<string> { "(keine)" };
+
+            var rawOrJpg = (_index ?? Enumerable.Empty<PhotoIndexEntry>()).Select(i => i.RawOrJpg).Where(s => !string.IsNullOrWhiteSpace(s)).Distinct().OrderBy(s => s).ToList();
+            if (rawOrJpg.Count == 0) rawOrJpg = new List<string> { "JPG", "RAW" };
+            RawJpgFilter.ItemsSource = rawOrJpg;
+
+            var series = (_index ?? Enumerable.Empty<PhotoIndexEntry>()).Select(i => i.Series).Where(s => !string.IsNullOrWhiteSpace(s)).Distinct().OrderBy(s => s).ToList();
+            SeriesFilter.ItemsSource = series.Count != 0 ? series : new List<string> { "(keine)" };
+
+            // Ordner-Auswahl: direkte Unterordner-Namen unter Canon_R10_Bilder (z.B. 01_Bibioothek_JPG)
+            var folders = (_index ?? Enumerable.Empty<PhotoIndexEntry>())
+                .Select(i => System.IO.Path.GetDirectoryName(i.FilePath) ?? string.Empty)
+                .Select(d =>
+                {
+                    var parts = d.Split(separator, StringSplitOptions.RemoveEmptyEntries);
+                    for (int p = 0; p < parts.Length; p++)
+                    {
+                        if (string.Equals(parts[p], "Canon_R10_Bilder", StringComparison.OrdinalIgnoreCase) && p + 1 < parts.Length)
+                        {
+                            return NormalizeLibraryName(parts[p + 1]);
+                        }
+                    }
+                    return string.Empty;
+                })
+                .Where(s => !string.IsNullOrWhiteSpace(s))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .OrderBy(s => s)
+                .ToList();
+
+            FolderFilter.ItemsSource = folders.Count != 0 ? folders : new List<string> { "(keiner)" };
+            if (folders.Count != 0) 
+            {
+                FolderFilter.SelectedIndex = 0;
+                // Build tree for initially selected folder
+                BuildFolderTree(FolderFilter.SelectedItem as string);
+            }
+
+            // Favoriten (Tags) als Platzhalter
+            var favs = (_index ?? Enumerable.Empty<PhotoIndexEntry>()).Select(i => i.Tags).Where(s => !string.IsNullOrWhiteSpace(s)).Distinct().OrderBy(s => s).ToList();
+            FavoritesFilter.ItemsSource = favs.Count != 0 ? favs : new List<string> { "(keine)" };
+        }
+
+        private static readonly char[] separator = new[] { '\\' };
+
+        // Overload: erlaubt das Starten der Seite mit einer Suchanfrage
+        public SearchPage(string query) : this()
+        {
+            if (!string.IsNullOrWhiteSpace(query))
+            {
+                PerformSearch(query);
+            }
+        }
+
+        private static string NormalizeLibraryName(string? library)
+        {
+            if (string.Equals(library, LegacyRawLibraryName, StringComparison.OrdinalIgnoreCase))
+            {
+                return RawLibraryName;
+            }
+
+            return library ?? string.Empty;
+        }
+
+        private static string NormalizeArchiveRoot(string? archivePath)
+        {
+            var root = string.IsNullOrWhiteSpace(archivePath)
+                ? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Canon_R10_Bilder")
+                : archivePath;
+
+            var normalizedRoot = root.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            if (string.Equals(Path.GetFileName(normalizedRoot), "Canon_R10_Bilder", StringComparison.OrdinalIgnoreCase))
+            {
+                return normalizedRoot;
+            }
+
+            var canonRoot = Path.Combine(normalizedRoot, "Canon_R10_Bilder");
+            return Directory.Exists(canonRoot) ? canonRoot : normalizedRoot;
+        }
+
+        private static bool IsInSelectedLibrary(string? filePath, string? selectedLibrary)
+        {
+            if (string.IsNullOrWhiteSpace(filePath) || string.IsNullOrWhiteSpace(selectedLibrary)) return false;
+
+            var normalizedLibrary = NormalizeLibraryName(selectedLibrary);
+            var parts = (Path.GetDirectoryName(filePath) ?? string.Empty)
+                .Split(new[] { '\\', '/' }, StringSplitOptions.RemoveEmptyEntries);
+
+            for (int p = 0; p < parts.Length; p++)
+            {
+                if (string.Equals(parts[p], "Canon_R10_Bilder", StringComparison.OrdinalIgnoreCase) && p + 1 < parts.Length)
+                {
+                    return string.Equals(NormalizeLibraryName(parts[p + 1]), normalizedLibrary, StringComparison.OrdinalIgnoreCase);
+                }
+            }
+
+            return false;
+        }
+
+        private static string GetRelativeFolderUnderLibrary(string? filePath, string? selectedLibrary)
+        {
+            if (string.IsNullOrWhiteSpace(filePath) || string.IsNullOrWhiteSpace(selectedLibrary)) return string.Empty;
+
+            var normalizedLibrary = NormalizeLibraryName(selectedLibrary);
+            var parts = (Path.GetDirectoryName(filePath) ?? string.Empty)
+                .Split(new[] { '\\', '/' }, StringSplitOptions.RemoveEmptyEntries);
+
+            for (int p = 0; p < parts.Length; p++)
+            {
+                if (string.Equals(parts[p], "Canon_R10_Bilder", StringComparison.OrdinalIgnoreCase) && p + 1 < parts.Length)
+                {
+                    if (string.Equals(NormalizeLibraryName(parts[p + 1]), normalizedLibrary, StringComparison.OrdinalIgnoreCase))
+                    {
+                        return string.Join("/", parts.Skip(p + 2));
+                    }
+
+                    break;
+                }
+            }
+
+            return string.Empty;
+        }
+
+        private static string GetComboValue(ComboBox comboBox)
+        {
+            return comboBox.SelectedItem?.ToString()
+                ?? comboBox.Text
+                ?? string.Empty;
+        }
+
+        private string? GetLibraryRootPath(string? library)
+        {
+            library = NormalizeLibraryName(library);
+            if (string.IsNullOrWhiteSpace(library) || library == "(keiner)") return null;
+
+            var settings = SettingsService.Load();
+            var normalizedArchivePath = NormalizeArchiveRoot(settings?.ArchivePath);
+
+            var archiveFolderName = Path.GetFileName(normalizedArchivePath);
+
+            if (string.Equals(archiveFolderName, library, StringComparison.OrdinalIgnoreCase))
+            {
+                return normalizedArchivePath;
+            }
+
+            var preferredPath = Path.Combine(normalizedArchivePath, library);
+            if (Directory.Exists(preferredPath)) return preferredPath;
+
+            if (string.Equals(library, RawLibraryName, StringComparison.OrdinalIgnoreCase))
+            {
+                var legacyPath = Path.Combine(normalizedArchivePath, LegacyRawLibraryName);
+                if (Directory.Exists(legacyPath)) return legacyPath;
+            }
+
+            return preferredPath;
+        }
+
+        private static bool IsSameOrChildPath(string filePath, string folderPath)
+        {
+            if (string.IsNullOrWhiteSpace(filePath) || string.IsNullOrWhiteSpace(folderPath)) return false;
+
+            var normalizedFilePath = Path.GetFullPath(filePath).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            var normalizedFolderPath = Path.GetFullPath(folderPath).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+
+            return normalizedFilePath.Equals(normalizedFolderPath, StringComparison.OrdinalIgnoreCase)
+                || normalizedFilePath.StartsWith(normalizedFolderPath + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase)
+                || normalizedFilePath.StartsWith(normalizedFolderPath + Path.AltDirectorySeparatorChar, StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static string GetTopSearchQuery()
+        {
+            try
+            {
+                if (Application.Current?.MainWindow is MainWindow mw)
+                {
+                    return mw.TopSearchBox?.Text ?? string.Empty;
+                }
+            }
+            catch { }
+
+            return string.Empty;
+        }
+
+        private void BuildFolderTree(string? library)
+        {
+            library = NormalizeLibraryName(library);
+            FolderTree.Items.Clear();
+            if (string.IsNullOrWhiteSpace(library)) return;
+
+            var libraryRootPath = GetLibraryRootPath(library);
+            if (string.IsNullOrWhiteSpace(libraryRootPath) || !Directory.Exists(libraryRootPath)) return;
+
+            var allDirectories = Directory.GetDirectories(libraryRootPath, "*", SearchOption.AllDirectories)
+                .OrderBy(d => d, StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+            foreach (var directory in allDirectories)
+            {
+                var relativePath = Path.GetRelativePath(libraryRootPath, directory);
+                if (string.IsNullOrWhiteSpace(relativePath) || relativePath == ".") continue;
+
+                var parts = relativePath.Split(new[] { '\\', '/' }, StringSplitOptions.RemoveEmptyEntries);
+                TreeViewItem? parent = null;
+                string accumulatedPath = string.Empty;
+
+                foreach (var part in parts)
+                {
+                    accumulatedPath = string.IsNullOrEmpty(accumulatedPath) ? part : accumulatedPath + "/" + part;
+                    TreeViewItem? node;
+
+                    if (parent == null)
+                    {
+                        node = FolderTree.Items.OfType<TreeViewItem>()
+                            .FirstOrDefault(t => string.Equals(t.Tag as string, accumulatedPath, StringComparison.OrdinalIgnoreCase));
+
+                        if (node == null)
+                        {
+                            node = new TreeViewItem { Header = part, Tag = accumulatedPath };
+                            FolderTree.Items.Add(node);
+                        }
+                    }
+                    else
+                    {
+                        node = parent.Items.OfType<TreeViewItem>()
+                            .FirstOrDefault(t => string.Equals(t.Tag as string, accumulatedPath, StringComparison.OrdinalIgnoreCase));
+
+                        if (node == null)
+                        {
+                            node = new TreeViewItem { Header = part, Tag = accumulatedPath };
+                            parent.Items.Add(node);
+                        }
+                    }
+
+                    parent = node;
+                }
+            }
+        }
+
+        // Helper to satisfy analyzer (no-op)
+        private void ItemsControlCollectionEnsure() { }
+
+        private void FolderTree_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            if (e.NewValue is not TreeViewItem tvi) return;
+            _currentFolderRelativePath = tvi.Tag as string ?? string.Empty;
+            PerformSearch(GetTopSearchQuery());
+        }
+
+        private void FolderBackButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(_currentFolderRelativePath))
+            {
+                // nothing selected or already at root -> clear selection
+                ClearTreeSelection();
+                _currentFolderRelativePath = string.Empty;
+                PerformSearch(GetTopSearchQuery());
+                return;
+            }
+
+            var parts = _currentFolderRelativePath.Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length <= 1)
+            {
+                // move to library root
+                ClearTreeSelection();
+                _currentFolderRelativePath = string.Empty;
+                FolderFilter_SelectionChanged(FolderFilter, null);
+                return;
+            }
+
+            var parentRel = string.Join("/", parts.Take(parts.Length - 1));
+            // find TreeViewItem by Tag
+            var target = FindTreeViewItemByTag(parentRel);
+            if (target != null)
+            {
+                target.IsSelected = true;
+            }
+            else
+            {
+                // fallback: set to root
+                ClearTreeSelection();
+                _currentFolderRelativePath = string.Empty;
+                PerformSearch(GetTopSearchQuery());
+            }
+        }
+
+        private void ClearTreeSelection()
+        {
+            foreach (var top in FolderTree.Items.OfType<TreeViewItem>())
+            {
+                ClearSelectionRecursive(top);
+            }
+        }
+
+        private void ClearSelectionRecursive(TreeViewItem node)
+        {
+            if (node.IsSelected) node.IsSelected = false;
+            foreach (var child in node.Items.OfType<TreeViewItem>()) ClearSelectionRecursive(child);
+        }
+
+        private TreeViewItem? FindTreeViewItemByTag(string tag)
+        {
+            foreach (var top in FolderTree.Items.OfType<TreeViewItem>())
+            {
+                var found = FindInTree(top, tag);
+                if (found != null) return found;
+            }
+            return null;
+        }
+
+        private TreeViewItem? FindInTree(TreeViewItem node, string tag)
+        {
+            if ((node.Tag as string) == tag) return node;
+            foreach (var child in node.Items.OfType<TreeViewItem>())
+            {
+                var found = FindInTree(child, tag);
+                if (found != null) return found;
+            }
+            return null;
+        }
+
+        private void PerformSearch(string query)
+        {
+            try
+            {
+                var category = GetComboValue(CategoryFilter);
+                var rawOrJpg = GetComboValue(RawJpgFilter);
+                var series = GetComboValue(SeriesFilter);
+                var favorites = GetComboValue(FavoritesFilter);
+
+                var results = _engine.Search(query, category, rawOrJpg, series, favorites).ToList();
+
+                // Apply date range if set
+                if (DateFromPicker.SelectedDate.HasValue || DateToPicker.SelectedDate.HasValue)
+                {
+                    var from = DateFromPicker.SelectedDate ?? DateTime.MinValue;
+                    var to = DateToPicker.SelectedDate ?? DateTime.MaxValue;
+                    results = results.Where(r => r.Timestamp >= from && r.Timestamp <= to).ToList();
+                }
+
+                // Apply library filter if set
+                var folder = NormalizeLibraryName(GetComboValue(FolderFilter));
+                if (!string.IsNullOrWhiteSpace(folder) && folder != "(keiner)")
+                {
+                    results = results.Where(i => IsInSelectedLibrary(i.FilePath, folder)).ToList();
+                }
+
+                if (!string.IsNullOrWhiteSpace(_currentFolderRelativePath))
+                {
+                    results = results.Where(i =>
+                    {
+                        var relativeFolder = GetRelativeFolderUnderLibrary(i.FilePath, folder);
+                        return string.Equals(relativeFolder, _currentFolderRelativePath, StringComparison.OrdinalIgnoreCase)
+                            || relativeFolder.StartsWith(_currentFolderRelativePath + "/", StringComparison.OrdinalIgnoreCase);
+                    }).ToList();
+                }
+
+                ResultList.ItemsSource = results.OrderByDescending(i => i.Timestamp).ToList();
+            }
+            catch (Exception ex)
+            {
+                try { App.Log($"Search error: {ex}"); } catch { }
+                MessageBox.Show("Beim Ausführen der Suche ist ein Fehler aufgetreten. Details wurden ins Log geschrieben.", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void Filter_Changed(object sender, SelectionChangedEventArgs e)
+        {
+            // Wenn Raw/JPG geändert wurde und ein Ordner ausgewählt ist, dann
+            // soll die 2. Dropdown-Liste die Unterordner (Kategorien) dieses Bibliotheksordners anzeigen.
+            try
+            {
+                var selectedFolder = NormalizeLibraryName(GetComboValue(FolderFilter));
+                var selectedRaw = GetComboValue(RawJpgFilter);
+
+                if (!string.IsNullOrWhiteSpace(selectedFolder) && _index != null)
+                {
+                    // Sammle die nächsten Unterordner direkt unter dem ausgewählten Bibliotheksordner
+                    // Sammle alle Unterordner-Pfade unterhalb des ausgewählten Bibliotheksordners.
+                    // Dabei werden auch tiefere Ebenen als "Pfad/Unterpfad" angeboten, damit der Benutzer
+                    // die gesamte Tree-Struktur als Auswahl bekommt.
+                    var relSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                    foreach (var item in _index)
+                    {
+                        if (string.IsNullOrWhiteSpace(item.FilePath)) continue;
+                        // Wenn Raw/JPG ausgewählt ist, nur passende Einträge berücksichtigen; sonst alle
+                        if (!string.IsNullOrWhiteSpace(selectedRaw) && !string.Equals(item.RawOrJpg, selectedRaw, StringComparison.OrdinalIgnoreCase)) continue;
+
+                        var dir = System.IO.Path.GetDirectoryName(item.FilePath) ?? string.Empty;
+                        var parts = dir.Split(separator, StringSplitOptions.RemoveEmptyEntries);
+                        for (int p = 0; p < parts.Length; p++)
+                        {
+                            if (string.Equals(parts[p], "Canon_R10_Bilder", StringComparison.OrdinalIgnoreCase) && p + 1 < parts.Length)
+                            {
+                                if (string.Equals(NormalizeLibraryName(parts[p + 1]), selectedFolder, StringComparison.OrdinalIgnoreCase))
+                                {
+                                    // Baue alle Präfix-Pfade der Unterordner ab parts[p+2]
+                                    if (p + 2 < parts.Length)
+                                    {
+                                        for (int end = p + 2; end < parts.Length; end++)
+                                        {
+                                            var rel = string.Join("/", parts.Skip(p + 2).Take(end - (p + 2) + 1));
+                                            if (!string.IsNullOrWhiteSpace(rel)) relSet.Add(rel);
+                                        }
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    var subfolders = relSet.OrderBy(s => s).ToList();
+
+                    if (subfolders.Count != 0)
+                    {
+                        CategoryFilter.ItemsSource = subfolders;
+                        CategoryFilter.IsEnabled = true;
+                        CategoryFilter.SelectedIndex = -1;
+                    }
+                    else
+                    {
+                        // Falls keine Unterordner vorhanden sind, versuche Kategorien aus Index-Einträgen zu verwenden
+                        var categories = _index.Where(i => IsInSelectedLibrary(i.FilePath, selectedFolder) && string.Equals(i.RawOrJpg, selectedRaw, StringComparison.OrdinalIgnoreCase))
+                                               .Select(i => i.Category)
+                                               .Where(s => !string.IsNullOrWhiteSpace(s))
+                                               .Distinct()
+                                               .OrderBy(s => s)
+                                               .ToList();
+
+                        if (categories.Count != 0)
+                        {
+                            CategoryFilter.ItemsSource = categories;
+                            CategoryFilter.IsEnabled = true;
+                            CategoryFilter.SelectedIndex = -1;
+                        }
+                        else
+                        {
+                            CategoryFilter.ItemsSource = new List<string> { "(keine)" };
+                            CategoryFilter.IsEnabled = false;
+                            CategoryFilter.SelectedIndex = 0;
+                        }
+                    }
+                }
+            }
+            catch { }
+
+            // Re-run search with current top-search text (if any)
+            string query = string.Empty;
+            try { if (Application.Current?.MainWindow is MainWindow mw) query = mw.TopSearchBox?.Text ?? string.Empty; } catch { }
+            PerformSearch(query);
+        }
+
+        private void SearchButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                string query = string.Empty;
+                try
+                {
+                    if (Application.Current?.MainWindow is MainWindow mw)
+                    {
+                        query = mw.TopSearchBox?.Text ?? string.Empty;
+                    }
+                }
+                catch { }
+
+                PerformSearch(query);
+            }
+            catch (Exception ex)
+            {
+            try
+            {
+                App.Log($"Search error: {ex}");
+            }
+            catch { }
+            MessageBox.Show("Beim Ausführen der Suche ist ein Fehler aufgetreten. Details wurden ins Log geschrieben.", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void ResultList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (ResultList.SelectedItem is PhotoIndexEntry entry)
+            {
+                try
+                {
+                    // Lade das Bild synchron und ignoriere den Image-Cache, damit bei schneller
+                    // Auswahl in der Liste immer das korrekte Bild angezeigt wird.
+                    var bmp = new BitmapImage();
+                    bmp.BeginInit();
+                    bmp.CacheOption = BitmapCacheOption.OnLoad;
+                    bmp.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
+                    bmp.UriSource = new Uri(entry.FilePath);
+                    bmp.EndInit();
+                    bmp.Freeze();
+                    PreviewImage.Source = bmp;
+                }
+                catch
+                {
+                    // Falls Laden fehlschlägt, Bild zurücksetzen
+                    PreviewImage.Source = null;
+                }
+
+                PreviewFileName.Text = entry.FileName;
+                PreviewCategory.Text = entry.Category;
+                PreviewPath.Text = entry.FilePath;
+            }
+        }
+
+        // single Filter_Changed handler defined below
+
+        private void RenameButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (ResultList.SelectedItem is not PhotoIndexEntry entry) return;
+
+            var input = Interaction.InputBox("Neuer Dateiname (ohne Pfad, inkl. Endung):", "Datei umbenennen", entry.FileName);
+            if (string.IsNullOrWhiteSpace(input) || input == entry.FileName) return;
+
+            try
+            {
+                var dir = Path.GetDirectoryName(entry.FilePath) ?? string.Empty;
+                var newPath = Path.Combine(dir, input);
+                if (File.Exists(newPath))
+                {
+                    MessageBox.Show("Zieldatei existiert bereits.", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                File.Move(entry.FilePath, newPath);
+                var thumb = IndexBuilder.RegenerateThumbnail(newPath);
+                entry.FileName = Path.GetFileName(newPath);
+                entry.FilePath = newPath;
+                entry.Thumbnail = thumb ?? entry.Thumbnail;
+                ResultList.Items.Refresh();
+                PreviewFileName.Text = entry.FileName;
+                PreviewPath.Text = entry.FilePath;
+
+                MessageBox.Show("Datei umbenannt.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Fehler beim Umbenennen: " + ex.Message, "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void RenameMenu_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (sender is not MenuItem mi) return;
+                if (mi.Parent is not ContextMenu cm) return;
+                if (cm.PlacementTarget is not FrameworkElement fe) return;
+                if (fe.DataContext is not PhotoIndexEntry entry) return;
+
+                var input = Interaction.InputBox("Neuer Dateiname (ohne Pfad, inkl. Endung):", "Datei umbenennen", entry.FileName);
+                if (string.IsNullOrWhiteSpace(input) || input == entry.FileName) return;
+
+                var dir = Path.GetDirectoryName(entry.FilePath) ?? string.Empty;
+                var newPath = Path.Combine(dir, input);
+                if (File.Exists(newPath))
+                {
+                    MessageBox.Show("Zieldatei existiert bereits.", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                File.Move(entry.FilePath, newPath);
+
+                var thumb = IndexBuilder.RegenerateThumbnail(newPath);
+                entry.FileName = Path.GetFileName(newPath);
+                entry.FilePath = newPath;
+                entry.Thumbnail = thumb ?? entry.Thumbnail;
+
+                ResultList.Items.Refresh();
+                PreviewFileName.Text = entry.FileName;
+                PreviewPath.Text = entry.FilePath;
+
+                MessageBox.Show("Datei umbenannt.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Fehler beim Umbenennen: " + ex.Message, "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void FolderFilter_SelectionChanged(object sender, SelectionChangedEventArgs? e)
+        {
+            var folder = NormalizeLibraryName(GetComboValue(FolderFilter));
+            if (string.IsNullOrWhiteSpace(folder) || folder == "(keiner)")
+            {
+                FolderTree.Items.Clear();
+                _currentFolderRelativePath = string.Empty;
+                ResultList.ItemsSource = (_index ?? Enumerable.Empty<PhotoIndexEntry>()).OrderByDescending(i => i.Timestamp).ToList();
+                return;
+            }
+
+            _currentFolderRelativePath = string.Empty;
+            BuildFolderTree(folder);
+
+            var libraryRootPath = GetLibraryRootPath(folder);
+            var filtered = (_index ?? Enumerable.Empty<PhotoIndexEntry>())
+                .Where(i => IsInSelectedLibrary(i.FilePath, folder))
+                .ToList();
+
+            // 1) Kategorie-Dropdown mit direkten Unterordnern der gewählten Bibliothek füllen
+            try
+            {
+                var relSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+                if (!string.IsNullOrWhiteSpace(libraryRootPath) && Directory.Exists(libraryRootPath))
+                {
+                    foreach (var directory in Directory.GetDirectories(libraryRootPath, "*", SearchOption.TopDirectoryOnly))
+                    {
+                        var name = Path.GetFileName(directory);
+                        if (!string.IsNullOrWhiteSpace(name)) relSet.Add(name);
+                    }
+                }
+
+                var childFolders = relSet.OrderBy(s => s).ToList();
+                if (childFolders.Count != 0)
+                {
+                    CategoryFilter.ItemsSource = childFolders;
+                    CategoryFilter.IsEnabled = true;
+                    CategoryFilter.SelectedIndex = -1;
+                }
+                else
+                {
+                    // Fallback: benutze ParentFolder oder Category-Feld
+                    var fallback = filtered.Select(i => i.ParentFolder).Where(s => !string.IsNullOrWhiteSpace(s)).Distinct().OrderBy(s => s).ToList();
+                    if (fallback.Count != 0)
+                    {
+                        CategoryFilter.ItemsSource = fallback;
+                        CategoryFilter.IsEnabled = true;
+                        CategoryFilter.SelectedIndex = -1;
+                    }
+                    else
+                    {
+                        CategoryFilter.ItemsSource = new List<string> { "(keine)" };
+                        CategoryFilter.IsEnabled = false;
+                        CategoryFilter.SelectedIndex = 0;
+                    }
+                }
+            }
+            catch { }
+
+            // 2) Raw/JPG-Filter aktualisieren basierend auf Einträgen in diesem Ordner
+            try
+            {
+                var rawOrJpg = filtered.Select(i => i.RawOrJpg).Where(s => !string.IsNullOrWhiteSpace(s)).Distinct().OrderBy(s => s).ToList();
+                if (rawOrJpg.Count != 0)
+                {
+                    RawJpgFilter.ItemsSource = rawOrJpg;
+                    RawJpgFilter.IsEnabled = true;
+                    RawJpgFilter.SelectedIndex = -1;
+                }
+                else
+                {
+                    RawJpgFilter.ItemsSource = new List<string> { "(keine)" };
+                    RawJpgFilter.IsEnabled = false;
+                    RawJpgFilter.SelectedIndex = 0;
+                }
+            }
+            catch { }
+
+            // 3) Ergebnisliste aktualisieren (neueste zuerst)
+            ResultList.ItemsSource = filtered.OrderByDescending(i => i.Timestamp).ToList();
+
+            // 4) Re-apply search with top-search text
+            string query = string.Empty;
+            try { if (Application.Current?.MainWindow is MainWindow mw) query = mw.TopSearchBox?.Text ?? string.Empty; } catch { }
+            PerformSearch(query);
+        }
+    }
+}

@@ -10,6 +10,10 @@ using R10CSharp.Models;
 
 namespace R10CSharp.Services
 {
+    /// <summary>
+    /// Importiert einen bestehenden JSON-Index optional in die Datenbank.
+    /// Dient als Brücke zwischen dateibasierter und datenbankgestützter Ablage.
+    /// </summary>
     public class IndexImportService(R10PhotoContext db, AppSettings settings)
     {
         private static readonly JsonSerializerOptions ImportJsonOptions = new() { PropertyNameCaseInsensitive = true };
@@ -39,7 +43,7 @@ namespace R10CSharp.Services
                     return;
                 }
 
-                // Ermittle bereits vorhandene FilePaths in der DB
+                // Ermittelt bereits vorhandene FilePaths in der DB, damit der Import idempotent bleibt.
                 var existingPaths = await _db.PhotoIndexEntries.Select(p => p.FilePath).ToListAsync().ConfigureAwait(false);
 
                 var toImport = entries.Where(e => !existingPaths.Contains(e.FilePath, StringComparer.OrdinalIgnoreCase)).ToList();
@@ -49,7 +53,7 @@ namespace R10CSharp.Services
                     return;
                 }
 
-                // Entferne ggf. Id-Werte aus importierten Objekten (EF setzt eigene Ids)
+                // Entfernt ggf. alte Id-Werte aus importierten Objekten, da EF eigene Schlüssel vergibt.
                 foreach (var e in toImport)
                 {
                     e.Id = 0;

@@ -5,12 +5,21 @@ using System.Linq;
 
 namespace R10CSharp.Services
 {
+    /// <summary>
+    /// Liefert unterstützte Bilddateien aus dem Archiv.
+    /// Berücksichtigt dabei optionale Bibliotheksfilter und blendet bekannte Sync-Ordner aus.
+    /// </summary>
     public static class FileScanner
     {
+        /// <summary>
+        /// Durchsucht ein Wurzelverzeichnis rekursiv nach unterstützten Bilddateien.
+        /// Optional kann auf bestimmte direkte Unterordner eingeschränkt werden.
+        /// </summary>
         public static IEnumerable<string> GetImageFiles(string rootPath, string[]? includeFolderNames = null)
         {
             if (!Directory.Exists(rootPath)) return Enumerable.Empty<string>();
 
+            // Unterstützte Dateitypen für JPG, PNG und verschiedene RAW-Formate.
             var files = Directory.EnumerateFiles(rootPath, "*.*", SearchOption.AllDirectories)
                 .Where(f => f.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)
                          || f.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)
@@ -32,7 +41,7 @@ namespace R10CSharp.Services
                     .Where(n => !string.IsNullOrEmpty(n))
                     .ToArray();
 
-                // Entferne bekannte Sync-Ordner
+                // Entfernt bekannte Cloud-/Sync-Ordner, damit diese nicht versehentlich indexiert werden.
                 var filtered = topDirs.Where(n =>
                 {
                     var ln = n!.ToLowerInvariant();
@@ -60,11 +69,12 @@ namespace R10CSharp.Services
                 }
                 else
                 {
-                    // Keine passenden Unterordner vorhanden -> alle Dateien zurückgeben
+                    // Keine passenden Unterordner vorhanden -> alle gefundenen Dateien zurückgeben.
                     return files;
                 }
             }
 
+            // Nur Dateien zurückgeben, deren erster relativer Ordnername in der erlaubten Menge enthalten ist.
             var set = new HashSet<string>(includeFolderNames, StringComparer.OrdinalIgnoreCase);
 
             return files.Where(f =>

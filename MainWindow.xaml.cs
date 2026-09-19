@@ -5,6 +5,11 @@ using R10CSharp.Pages;
 
 namespace R10CSharp
 {
+    /// <summary>
+    /// Hauptfenster mit Navigation und globaler Suchleiste.
+    /// Verknüpft die Eingabe oben mit der SearchPage und übernimmt optional
+    /// eine von Windows/Explorer übergebene Startdatei als Suchauslöser.
+    /// </summary>
     public partial class MainWindow : Window
     {
         public MainWindow(string? startupFilePath = null)
@@ -12,6 +17,9 @@ namespace R10CSharp
             InitializeComponent();
             if (!string.IsNullOrWhiteSpace(startupFilePath) && File.Exists(startupFilePath))
             {
+                // Wichtige Shell-/Windows-Integration:
+                // Wenn die App über eine Datei gestartet wurde, wird direkt die Suche geöffnet
+                // und mit dem Dateinamen vorbelegt, damit der Benutzer ähnliche Bilder schnell findet.
                 MainFrame.Navigate(new SearchPage(Path.GetFileNameWithoutExtension(startupFilePath)));
             }
             else
@@ -27,6 +35,7 @@ namespace R10CSharp
 
             TopSearchButton.Click += (s, e) =>
             {
+                // Zentrale Suchleiste des Hauptfensters -> delegiert an die SearchPage.
                 var q = TopSearchBox.Text;
                 MainFrame.Navigate(new SearchPage(q));
             };

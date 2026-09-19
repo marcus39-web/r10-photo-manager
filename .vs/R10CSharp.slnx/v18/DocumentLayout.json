@@ -1,0 +1,388 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\11_Foto_App\\R10CSharp\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{E70A3733-403A-7149-45C0-C6AAFC608C06}|R10CSharp.csproj|d:\\11_foto_app\\r10csharp\\readme.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}",
+      "RelativeMoniker": "D:0:0:{E70A3733-403A-7149-45C0-C6AAFC608C06}|R10CSharp.csproj|solutionrelative:readme.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E70A3733-403A-7149-45C0-C6AAFC608C06}|R10CSharp.csproj|d:\\11_foto_app\\r10csharp\\app.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E70A3733-403A-7149-45C0-C6AAFC608C06}|R10CSharp.csproj|solutionrelative:app.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E70A3733-403A-7149-45C0-C6AAFC608C06}|R10CSharp.csproj|d:\\11_foto_app\\r10csharp\\pages\\searchpage.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E70A3733-403A-7149-45C0-C6AAFC608C06}|R10CSharp.csproj|solutionrelative:pages\\searchpage.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E70A3733-403A-7149-45C0-C6AAFC608C06}|R10CSharp.csproj|d:\\11_foto_app\\r10csharp\\services\\searchengine.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E70A3733-403A-7149-45C0-C6AAFC608C06}|R10CSharp.csproj|solutionrelative:services\\searchengine.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E70A3733-403A-7149-45C0-C6AAFC608C06}|R10CSharp.csproj|d:\\11_foto_app\\r10csharp\\services\\exploreropenwithregistration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E70A3733-403A-7149-45C0-C6AAFC608C06}|R10CSharp.csproj|solutionrelative:services\\exploreropenwithregistration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E70A3733-403A-7149-45C0-C6AAFC608C06}|R10CSharp.csproj|d:\\11_foto_app\\r10csharp\\services\\windowsappregistration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E70A3733-403A-7149-45C0-C6AAFC608C06}|R10CSharp.csproj|solutionrelative:services\\windowsappregistration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E70A3733-403A-7149-45C0-C6AAFC608C06}|R10CSharp.csproj|d:\\11_foto_app\\r10csharp\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E70A3733-403A-7149-45C0-C6AAFC608C06}|R10CSharp.csproj|solutionrelative:mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E70A3733-403A-7149-45C0-C6AAFC608C06}|R10CSharp.csproj|d:\\11_foto_app\\r10csharp\\migrations\\r10photocontextmodelsnapshot.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E70A3733-403A-7149-45C0-C6AAFC608C06}|R10CSharp.csproj|solutionrelative:migrations\\r10photocontextmodelsnapshot.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E70A3733-403A-7149-45C0-C6AAFC608C06}|R10CSharp.csproj|d:\\11_foto_app\\r10csharp\\migrations\\20260912_initialcreate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E70A3733-403A-7149-45C0-C6AAFC608C06}|R10CSharp.csproj|solutionrelative:migrations\\20260912_initialcreate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E70A3733-403A-7149-45C0-C6AAFC608C06}|R10CSharp.csproj|d:\\11_foto_app\\r10csharp\\pages\\settingpage.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E70A3733-403A-7149-45C0-C6AAFC608C06}|R10CSharp.csproj|solutionrelative:pages\\settingpage.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E70A3733-403A-7149-45C0-C6AAFC608C06}|R10CSharp.csproj|d:\\11_foto_app\\r10csharp\\pages\\indexpage.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E70A3733-403A-7149-45C0-C6AAFC608C06}|R10CSharp.csproj|solutionrelative:pages\\indexpage.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E70A3733-403A-7149-45C0-C6AAFC608C06}|R10CSharp.csproj|d:\\11_foto_app\\r10csharp\\pages\\scanpage.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E70A3733-403A-7149-45C0-C6AAFC608C06}|R10CSharp.csproj|solutionrelative:pages\\scanpage.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E70A3733-403A-7149-45C0-C6AAFC608C06}|R10CSharp.csproj|d:\\11_foto_app\\r10csharp\\pages\\startpage.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E70A3733-403A-7149-45C0-C6AAFC608C06}|R10CSharp.csproj|solutionrelative:pages\\startpage.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E70A3733-403A-7149-45C0-C6AAFC608C06}|R10CSharp.csproj|d:\\11_foto_app\\r10csharp\\services\\settingsservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E70A3733-403A-7149-45C0-C6AAFC608C06}|R10CSharp.csproj|solutionrelative:services\\settingsservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E70A3733-403A-7149-45C0-C6AAFC608C06}|R10CSharp.csproj|d:\\11_foto_app\\r10csharp\\services\\indeximportservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E70A3733-403A-7149-45C0-C6AAFC608C06}|R10CSharp.csproj|solutionrelative:services\\indeximportservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E70A3733-403A-7149-45C0-C6AAFC608C06}|R10CSharp.csproj|d:\\11_foto_app\\r10csharp\\services\\indexbuilder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E70A3733-403A-7149-45C0-C6AAFC608C06}|R10CSharp.csproj|solutionrelative:services\\indexbuilder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E70A3733-403A-7149-45C0-C6AAFC608C06}|R10CSharp.csproj|d:\\11_foto_app\\r10csharp\\services\\filescanner.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E70A3733-403A-7149-45C0-C6AAFC608C06}|R10CSharp.csproj|solutionrelative:services\\filescanner.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E70A3733-403A-7149-45C0-C6AAFC608C06}|R10CSharp.csproj|d:\\11_foto_app\\r10csharp\\data\\r10photocontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E70A3733-403A-7149-45C0-C6AAFC608C06}|R10CSharp.csproj|solutionrelative:data\\r10photocontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E70A3733-403A-7149-45C0-C6AAFC608C06}|R10CSharp.csproj|d:\\11_foto_app\\r10csharp\\models\\photoindexentry.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E70A3733-403A-7149-45C0-C6AAFC608C06}|R10CSharp.csproj|solutionrelative:models\\photoindexentry.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E70A3733-403A-7149-45C0-C6AAFC608C06}|R10CSharp.csproj|d:\\11_foto_app\\r10csharp\\r10csharp.packaged.slnx||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "RelativeMoniker": "D:0:0:{E70A3733-403A-7149-45C0-C6AAFC608C06}|R10CSharp.csproj|solutionrelative:r10csharp.packaged.slnx||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "README.md",
+              "DocumentMoniker": "D:\\11_Foto_App\\R10CSharp\\README.md",
+              "RelativeDocumentMoniker": "README.md",
+              "ToolTip": "D:\\11_Foto_App\\R10CSharp\\README.md",
+              "RelativeToolTip": "README.md",
+              "ViewState": "AgIAALoAAAAAAAAAAAAAABcBAAA1AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2026-09-19T17:49:56.083Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "App.xaml.cs",
+              "DocumentMoniker": "D:\\11_Foto_App\\R10CSharp\\App.xaml.cs",
+              "RelativeDocumentMoniker": "App.xaml.cs",
+              "ToolTip": "D:\\11_Foto_App\\R10CSharp\\App.xaml.cs",
+              "RelativeToolTip": "App.xaml.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-19T17:45:32.427Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "MainWindow.xaml.cs",
+              "DocumentMoniker": "D:\\11_Foto_App\\R10CSharp\\MainWindow.xaml.cs",
+              "RelativeDocumentMoniker": "MainWindow.xaml.cs",
+              "ToolTip": "D:\\11_Foto_App\\R10CSharp\\MainWindow.xaml.cs",
+              "RelativeToolTip": "MainWindow.xaml.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-19T17:45:32.497Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "WindowsAppRegistration.cs",
+              "DocumentMoniker": "D:\\11_Foto_App\\R10CSharp\\Services\\WindowsAppRegistration.cs",
+              "RelativeDocumentMoniker": "Services\\WindowsAppRegistration.cs",
+              "ToolTip": "D:\\11_Foto_App\\R10CSharp\\Services\\WindowsAppRegistration.cs",
+              "RelativeToolTip": "Services\\WindowsAppRegistration.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-19T17:45:32.542Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "ExplorerOpenWithRegistration.cs",
+              "DocumentMoniker": "D:\\11_Foto_App\\R10CSharp\\Services\\ExplorerOpenWithRegistration.cs",
+              "RelativeDocumentMoniker": "Services\\ExplorerOpenWithRegistration.cs",
+              "ToolTip": "D:\\11_Foto_App\\R10CSharp\\Services\\ExplorerOpenWithRegistration.cs",
+              "RelativeToolTip": "Services\\ExplorerOpenWithRegistration.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-19T17:45:32.609Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "SearchEngine.cs",
+              "DocumentMoniker": "D:\\11_Foto_App\\R10CSharp\\Services\\SearchEngine.cs",
+              "RelativeDocumentMoniker": "Services\\SearchEngine.cs",
+              "ToolTip": "D:\\11_Foto_App\\R10CSharp\\Services\\SearchEngine.cs",
+              "RelativeToolTip": "Services\\SearchEngine.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-19T17:45:32.653Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "SearchPage.xaml.cs",
+              "DocumentMoniker": "D:\\11_Foto_App\\R10CSharp\\Pages\\SearchPage.xaml.cs",
+              "RelativeDocumentMoniker": "Pages\\SearchPage.xaml.cs",
+              "ToolTip": "D:\\11_Foto_App\\R10CSharp\\Pages\\SearchPage.xaml.cs",
+              "RelativeToolTip": "Pages\\SearchPage.xaml.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-19T17:45:32.695Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "R10PhotoContextModelSnapshot.cs",
+              "DocumentMoniker": "D:\\11_Foto_App\\R10CSharp\\Migrations\\R10PhotoContextModelSnapshot.cs",
+              "RelativeDocumentMoniker": "Migrations\\R10PhotoContextModelSnapshot.cs",
+              "ToolTip": "D:\\11_Foto_App\\R10CSharp\\Migrations\\R10PhotoContextModelSnapshot.cs",
+              "RelativeToolTip": "Migrations\\R10PhotoContextModelSnapshot.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-19T17:46:42.105Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "20260912_InitialCreate.cs",
+              "DocumentMoniker": "D:\\11_Foto_App\\R10CSharp\\Migrations\\20260912_InitialCreate.cs",
+              "RelativeDocumentMoniker": "Migrations\\20260912_InitialCreate.cs",
+              "ToolTip": "D:\\11_Foto_App\\R10CSharp\\Migrations\\20260912_InitialCreate.cs",
+              "RelativeToolTip": "Migrations\\20260912_InitialCreate.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-19T17:46:42.043Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "SettingPage.xaml.cs",
+              "DocumentMoniker": "D:\\11_Foto_App\\R10CSharp\\Pages\\SettingPage.xaml.cs",
+              "RelativeDocumentMoniker": "Pages\\SettingPage.xaml.cs",
+              "ToolTip": "D:\\11_Foto_App\\R10CSharp\\Pages\\SettingPage.xaml.cs",
+              "RelativeToolTip": "Pages\\SettingPage.xaml.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-19T17:46:41.978Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "IndexPage.xaml.cs",
+              "DocumentMoniker": "D:\\11_Foto_App\\R10CSharp\\Pages\\IndexPage.xaml.cs",
+              "RelativeDocumentMoniker": "Pages\\IndexPage.xaml.cs",
+              "ToolTip": "D:\\11_Foto_App\\R10CSharp\\Pages\\IndexPage.xaml.cs",
+              "RelativeToolTip": "Pages\\IndexPage.xaml.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-19T17:46:41.939Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "ScanPage.xaml.cs",
+              "DocumentMoniker": "D:\\11_Foto_App\\R10CSharp\\Pages\\ScanPage.xaml.cs",
+              "RelativeDocumentMoniker": "Pages\\ScanPage.xaml.cs",
+              "ToolTip": "D:\\11_Foto_App\\R10CSharp\\Pages\\ScanPage.xaml.cs",
+              "RelativeToolTip": "Pages\\ScanPage.xaml.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-19T17:46:41.894Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "StartPage.xaml.cs",
+              "DocumentMoniker": "D:\\11_Foto_App\\R10CSharp\\Pages\\StartPage.xaml.cs",
+              "RelativeDocumentMoniker": "Pages\\StartPage.xaml.cs",
+              "ToolTip": "D:\\11_Foto_App\\R10CSharp\\Pages\\StartPage.xaml.cs",
+              "RelativeToolTip": "Pages\\StartPage.xaml.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-19T17:46:41.855Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "SettingsService.cs",
+              "DocumentMoniker": "D:\\11_Foto_App\\R10CSharp\\Services\\SettingsService.cs",
+              "RelativeDocumentMoniker": "Services\\SettingsService.cs",
+              "ToolTip": "D:\\11_Foto_App\\R10CSharp\\Services\\SettingsService.cs",
+              "RelativeToolTip": "Services\\SettingsService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-19T17:46:41.811Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "IndexImportService.cs",
+              "DocumentMoniker": "D:\\11_Foto_App\\R10CSharp\\Services\\IndexImportService.cs",
+              "RelativeDocumentMoniker": "Services\\IndexImportService.cs",
+              "ToolTip": "D:\\11_Foto_App\\R10CSharp\\Services\\IndexImportService.cs",
+              "RelativeToolTip": "Services\\IndexImportService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-19T17:46:41.776Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "IndexBuilder.cs",
+              "DocumentMoniker": "D:\\11_Foto_App\\R10CSharp\\Services\\IndexBuilder.cs",
+              "RelativeDocumentMoniker": "Services\\IndexBuilder.cs",
+              "ToolTip": "D:\\11_Foto_App\\R10CSharp\\Services\\IndexBuilder.cs",
+              "RelativeToolTip": "Services\\IndexBuilder.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-19T17:46:41.74Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "FileScanner.cs",
+              "DocumentMoniker": "D:\\11_Foto_App\\R10CSharp\\Services\\FileScanner.cs",
+              "RelativeDocumentMoniker": "Services\\FileScanner.cs",
+              "ToolTip": "D:\\11_Foto_App\\R10CSharp\\Services\\FileScanner.cs",
+              "RelativeToolTip": "Services\\FileScanner.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-19T17:46:41.707Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "R10PhotoContext.cs",
+              "DocumentMoniker": "D:\\11_Foto_App\\R10CSharp\\Data\\R10PhotoContext.cs",
+              "RelativeDocumentMoniker": "Data\\R10PhotoContext.cs",
+              "ToolTip": "D:\\11_Foto_App\\R10CSharp\\Data\\R10PhotoContext.cs",
+              "RelativeToolTip": "Data\\R10PhotoContext.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-19T17:46:41.668Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "PhotoIndexEntry.cs",
+              "DocumentMoniker": "D:\\11_Foto_App\\R10CSharp\\Models\\PhotoIndexEntry.cs",
+              "RelativeDocumentMoniker": "Models\\PhotoIndexEntry.cs",
+              "ToolTip": "D:\\11_Foto_App\\R10CSharp\\Models\\PhotoIndexEntry.cs",
+              "RelativeToolTip": "Models\\PhotoIndexEntry.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-19T17:45:18.532Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{eefa5220-e298-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{d78612c7-9962-4b83-95d9-268046dad23a}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:1:0:{d212f56b-c48a-434c-a121-1c5d80b59b9f}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{40ea2e6b-2121-4bb8-a43e-c83c04b51041}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "R10CSharp.Packaged.slnx",
+              "DocumentMoniker": "D:\\11_Foto_App\\R10CSharp\\R10CSharp.Packaged.slnx",
+              "RelativeDocumentMoniker": "R10CSharp.Packaged.slnx",
+              "ToolTip": "D:\\11_Foto_App\\R10CSharp\\R10CSharp.Packaged.slnx",
+              "RelativeToolTip": "R10CSharp.Packaged.slnx",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002855|",
+              "WhenOpened": "2026-09-19T15:05:34.74Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+﻿using System;
+using System.IO;
+using System.Runtime.InteropServices;
+using Microsoft.Win32;
+
+namespace R10CSharp.Services
+{
+    internal static class ExplorerOpenWithRegistration
+    {
+        private const string ProgId = "R10PhotoManager.Image";
+
+        private static readonly string[] SupportedExtensions =
+        {
+            ".jpg", ".jpeg", ".png", ".cr2", ".cr3", ".nef", ".arw", ".rw2", ".dng"
+        };
+
+        public static void EnsureRegistered()
+        {
+            var exePath = Environment.ProcessPath;
+            if (string.IsNullOrWhiteSpace(exePath) || !File.Exists(exePath)) return;
+
+            var exeName = Path.GetFileName(exePath);
+            var command = $"\"{exePath}\" \"%1\"";
+
+            using (var progIdKey = Registry.CurrentUser.CreateSubKey($@"Software\Classes\{ProgId}"))
+            {
+                progIdKey?.SetValue(string.Empty, "R10 Photo Manager Bilddatei");
+                progIdKey?.SetValue("FriendlyTypeName", "R10 Photo Manager");
+
+                using var defaultIconKey = progIdKey?.CreateSubKey("DefaultIcon");
+                defaultIconKey?.SetValue(string.Empty, $"\"{exePath}\",0");
+
+                using var progCommandKey = progIdKey?.CreateSubKey(@"shell\open\command");
+                progCommandKey?.SetValue(string.Empty, command);
+            }
+
+            using (var appKey = Registry.CurrentUser.CreateSubKey($@"Software\Classes\Applications\{exeName}"))
+            {
+                appKey?.SetValue("FriendlyAppName", "R10 Photo Manager");
+
+                using var supportedTypesKey = appKey?.CreateSubKey("SupportedTypes");
+                foreach (var extension in SupportedExtensions)
+                {
+                    supportedTypesKey?.SetValue(extension, string.Empty);
+                }
+
+                using var appCommandKey = appKey?.CreateSubKey(@"shell\open\command");
+                appCommandKey?.SetValue(string.Empty, command);
+            }
+
+            foreach (var extension in SupportedExtensions)
+            {
+                using var openWithProgIdsKey = Registry.CurrentUser.CreateSubKey($@"Software\Classes\{extension}\OpenWithProgids");
+                openWithProgIdsKey?.SetValue(ProgId, string.Empty, RegistryValueKind.String);
+            }
+
+            NotifyShellAssociationsChanged();
+        }
+
+        private static void NotifyShellAssociationsChanged()
+        {
+            const uint SHCNE_ASSOCCHANGED = 0x08000000;
+            const uint SHCNF_IDLIST = 0x0000;
+            SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, IntPtr.Zero, IntPtr.Zero);
+        }
+
+        [DllImport("shell32.dll")]
+        private static extern void SHChangeNotify(uint wEventId, uint uFlags, IntPtr dwItem1, IntPtr dwItem2);
+    }
+}

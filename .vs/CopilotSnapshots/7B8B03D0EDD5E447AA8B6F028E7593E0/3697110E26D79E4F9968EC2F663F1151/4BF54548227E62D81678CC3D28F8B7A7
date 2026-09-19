@@ -1,0 +1,153 @@
+﻿R10 Photo Manager
+
+R10 Photo Manager ist ein einfacher Desktop-Foto-Manager in C# (WPF, .NET 8). Die Anwendung indexiert Bilddateien, erzeugt Thumbnails, bietet Suche und einen einfachen Import in eine lokale Datenbank (EF Core / SQL Server LocalDB).
+
+Inhalt dieses README
+- Kurzübersicht
+- Voraussetzungen
+- Projektstruktur
+- Starten / Build
+- Bedienung der Benutzeroberfläche (Buttons & Unterfunktionen)
+- Wichtige Dateien & Verzeichnisse
+- Fehlerbehebung
+- Beitrag & Lizenz
+
+Kurzübersicht
+------------
+Die App stellt folgende Hauptfunktionen bereit:
+- Scannen eines Verzeichnisses und Erzeugen eines Indexes mit Metadaten
+- Erzeugen und Speichern von Thumbnails
+- Volltext-/Filter-Suche über den Index
+- Windows-Integration: Startmenü-/App-Suche über registrierte Verknüpfungen sowie Explorer-"Öffnen mit" für unterstützte Bilddateien
+- Anzeigen grundlegender Kennzahlen (Indexseite)
+- Persistenz via JSON-Index und optionaler Import in eine lokale SQL-Datenbank (EF Core)
+
+Voraussetzungen
+-------------
+- Windows mit .NET 8 SDK installiert
+- Visual Studio 2022/2026 (oder jede IDE, die WPF/.NET 8 unterstützt)
+- Optional: SQL Server LocalDB, wenn die DB-Import-Funktion genutzt werden soll
+
+Projektstruktur (Kurz)
+---------------------
+- App.xaml / App.xaml.cs         - Anwendungseintritt, DI und Startup-Initialisierung
+- MainWindow.xaml / .cs          - Hauptfenster + Navigation
+- Pages/                         - WPF Pages: StartPage, SearchPage, ScanPage, IndexPage, SettingsPage
+- Services/                      - Logik: IndexBuilder, SearchEngine, FileScanner, SettingsService, IndexImportService
+- Data/                          - config.json (Einstellungen), index.json (Index), Thumbnails/
+- Models/                        - PhotoIndexEntry (Index-Datensatz)
+- Data/R10PhotoContext.cs        - EF Core DbContext + Migrations/
+
+Starten / Build
+---------------
+1. Lösung öffnen: R10CSharp.slnx in Visual Studio.
+2. Build: Menü Build -> Build Solution oder dotnet build in Projektordner.
+3. Start: Debug -> Start Debugging (F5) oder Start Without Debugging (Strg+F5).
+
+Bedienung der Benutzeroberfläche (Buttons & Unterfunktionen)
+-----------------------------------------------------------
+Hinweis: Navigation und Buttons werden größtenteils im MainWindow und in den Pages gesteuert. Nachfolgend sind alle sichtbaren Buttons und ihre Funktionalität aufgeführt.
+
+MainWindow / linke Navigation
+- Start (NavStart)
+  - Zeigt die StartPage mit Kacheln für Schnellaktionen.
+- Suche (NavSearch)
+  - Zeigt die SearchPage. Hier kann per Textfeld gesucht werden.
+- Scan (NavScan)
+  - Zeigt die ScanPage zum Starten eines Verzeichnisscans/Indexaufbaus.
+- Index (NavIndex)
+  - Zeigt die IndexPage mit Kennzahlen (Anzahl Dateien, RAW/JPG, Kategorien, Serien).
+  - Die Page lädt den JSON-Index (Data/index.json). Ist die Datei leer/fehlend oder fehlerhaft, wird ein leerer Index angezeigt (keine Ausnahme mehr durch ungültiges JSON).
+- Einstellungen (NavSettings)
+  - Öffnet die SettingsPage zum Anpassen von Pfaden, Parallelität und Theme.
+
+StartPage (Kachel-Buttons)
+- Suche (Search)
+  - Navigiert zur SearchPage.
+- Scan (Scan)
+  - Navigiert zur ScanPage.
+- Index (Index)
+  - Navigiert zur IndexPage.
+- Einstellungen (Settings)
+  - Navigiert zur SettingsPage.
+
+SearchPage
+- Suchfeld + Suchen-Button
+  - Führt eine Suche über den aktuell geladenen Index aus (String- und Filter-basierte Suche).
+- Ergebnisliste (ListView)
+  - Zeigt Thumbnail, Dateiname, Kategorie; Auswahl kann Detailansicht/Export triggern (implementiert als Platzhalter/weiterentwickeln).
+
+ScanPage
+- Start Scan / Scan-Button
+  - Startet den Indexaufbau über IndexBuilder.BuildIndexAsyncParallel(...). Der Scan liest Dateien aus dem konfigurierten Archivpfad, erstellt Thumbnails und schreibt Data/index.json.
+- Abbrechen / Cancel-Button
+  - Bricht den laufenden Scan via CancellationTokenSource ab.
+- Fortschrittsanzeige (ProgressBar + ETA)
+  - Zeigt Fortschritt der Thumbnail-/Index-Erzeugung und geschätzte Restdauer.
+
+IndexPage
+- Seite zeigt Kennzahlen:
+  - Gesamtanzahl Dateien
+  - RAW Dateien
+  - JPG Dateien
+  - Anzahl Kategorien
+  - Anzahl Serien
+- Implementation: Beim Laden wird der JSON-Index über IndexBuilder.LoadIndex geladen. Leere oder ungültige index.json führen nicht mehr zum Absturz (es wird ein leerer Index verwendet).
+
+SettingsPage
+- ArchivePath (Verzeichnis mit Bildern)
+  - Standardpfad kann hier gesetzt werden; wird vom Scan verwendet.
+- IndexPath (Pfad zur index.json)
+  - Pfad zur JSON-Datei; wird beim Laden/Schreiben des Indexes verwendet.
+- ThumbnailParallelism
+  - Anzahl paralleler Tasks für Thumbnail-Erzeugung (Semaphore-Slot-Anzahl).
+- ConnectionString
+  - Optionaler ConnectionString für SQL Server LocalDB; wird für EF Core / Import benutzt.
+- Save-Button
+  - Speichert Einstellungen in Data/config.json über SettingsService.
+
+Unterfunktionen / Services
+-------------------------
+- Services/IndexBuilder.cs
+  - BuildIndex / BuildIndexAsyncParallel: Scannt Dateien, erstellt PhotoIndexEntry-Objekte, erzeugt Thumbnails, speichert index.json.
+  - SaveIndex / LoadIndex: JSON-Persistenz (LoadIndex ist robust gegen fehlende/leere/invalid JSON-Dateien).
+  - CreateThumbnail: Erzeugt JPEG-Thumbnails und speichert sie im Data/Thumbnails-Verzeichnis.
+- Services/SearchEngine.cs
+  - Filtert den geladenen Index anhand von Query, Kategorie, Serien, RAW/JPG.
+- Services/SettingsService.cs
+  - Lädt/speichert Data/config.json mit AppSettings (ArchivePath, IndexPath, Parallelism, ConnectionString).
+- Services/IndexImportService.cs
+  - Importiert den JSON-Index in die Datenbank (R10PhotoContext) falls konfiguriert; läuft beim Start im Hintergrund, um UI-Blockierung zu vermeiden.
+- Services/WindowsAppRegistration.cs
+  - Registriert die Anwendung für Windows-Startmenü, App-Suche und Deinstallationsliste.
+- Services/ExplorerOpenWithRegistration.cs
+  - Registriert unterstützte Bilddateien für die Windows-Shell, damit Dateien per "Öffnen mit" direkt in der App landen.
+
+Wichtige Dateien & Verzeichnisse
+-------------------------------
+- Data/index.json         - JSON-Index (wird vom IndexBuilder gelesen/geschrieben)
+- Data/config.json        - Persistente App-Einstellungen
+- Data/Thumbnails/        - Erzeugte Thumbnails
+- Models/PhotoIndexEntry.cs - Datenmodell pro indexiertem Foto
+- Data/R10PhotoContext.cs - EF Core DbContext + Migrations/
+
+Fehlerbehebung (Quick)
+---------------------
+- App schließt beim Klick auf Index: Prüfen Sie Data/index.json. Wenn sie 0 Bytes oder ungültig ist, wurde LoadIndex gehärtet und ein leerer Index verwendet. Falls die App weiterhin unerwartet schließt, prüfen Sie bin\Debug\net8.0-windows\Data\app_error_log.txt auf Exceptions.
+- DB-Migration schlägt fehl mit LocalDB-Fehlern: Stellen Sie sicher, dass eine gültige LocalDB-Instanz installiert ist oder entfernen/konfigurieren Sie den ConnectionString in Data/config.json.
+- Thumbnails fehlen: Prüfen Sie Rechte für Data/Thumbnails und ob die Bilddateien im ArchivePath erreichbar sind.
+
+Weiterentwicklung
+-----------------
+- Detailansichten für Einträge (Löschen, Bearbeiten)
+- Fortgeschrittene Filter/Tagging
+- UI-Feinschliff und Responsive Layout
+- Vollständige Migration vom JSON-Index in die DB als primäre Quelle
+
+Beitrag & Lizenz
+----------------
+Beiträge sind willkommen. Bitte Issues/PRs im Repository öffnen.
+
+Lizenz: MIT
+
+Repository: https://github.com/marcus39-web/r10-photo-manager.git

@@ -4,13 +4,17 @@
         Title="R10 Photo Manager" Height="800" Width="1200"
         Background="{StaticResource WindowBackgroundBrush}">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="220" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
         <!-- Left navigation -->
-        <Border Grid.Column="0" Background="{StaticResource SurfaceBrush}" BorderBrush="#E6E6E6" BorderThickness="0,0,1,0">
+        <Border Grid.Row="0" Grid.Column="0" Background="{StaticResource SurfaceBrush}" BorderBrush="#E6E6E6" BorderThickness="0,0,1,0">
             <StackPanel Orientation="Vertical" Margin="12">
                 <TextBlock Text="R10 Photo" FontSize="20" FontWeight="Bold" Margin="4" />
                 <StackPanel Margin="0,12,0,0">
@@ -24,7 +28,7 @@
         </Border>
 
         <!-- Right content area -->
-        <DockPanel Grid.Column="1" Background="{StaticResource WindowBackgroundBrush}">
+        <DockPanel Grid.Row="0" Grid.Column="1" Background="{StaticResource WindowBackgroundBrush}">
             <DockPanel DockPanel.Dock="Top" Background="{StaticResource WindowBackgroundBrush}" Height="64" VerticalAlignment="Top">
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="12">
                     <TextBox x:Name="TopSearchBox" Width="420" Height="34" Margin="4" />
@@ -34,5 +38,17 @@
 
             <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden" Background="{StaticResource SurfaceBrush}" Margin="12" />
         </DockPanel>
+
+        <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                Background="{StaticResource SurfaceBrush}"
+                BorderBrush="#E6E6E6"
+                BorderThickness="1,1,0,0"
+                Padding="12,6">
+            <TextBlock Text="R10 Photo Manager © 2026 Marcus Reiser"
+                       FontSize="10"
+                       Opacity="0.7"
+                       HorizontalAlignment="Center"
+                       TextAlignment="Center" />
+        </Border>
     </Grid>
 </Window>
